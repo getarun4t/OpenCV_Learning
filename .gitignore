@@ -1,1 +1,43 @@
-/.vscode
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ---- Jupyter ----
+.ipynb_checkpoints
+*.ipynb_convert
+
+# ---- Environment ----
+.env
+.venv
+env/
+venv/
+ENV/
+*.conda
+
+# Don't commit conda environment folder
+/selfdriving/
+*/selfdriving/
+
+# ---- VS Code ----
+.vscode/
+.history/
+
+# ---- Logs & dumps ----
+*.log
+*.out
+*.err
+*.dat
+*.csv
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
