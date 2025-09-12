@@ -28,5 +28,10 @@ adam = Adam(learning_rate = 0.1)
 #Set learning process
 model.compile(adam, loss='binary_crossentropy', metrics=['accuracy'])
 #Train model to fit to our data
-model.fit(x=X, y=Y, verbose=1, batch_size=50, epochs=500, shuffle='true')
+h = model.fit(x=X, y=Y, verbose=1, batch_size=50, epochs=500, shuffle='true')
+# %%
+plt.plot(h.history['accuracy'])
+plt.title('accuracy')
+plt.xlabel('epoch')
+plt.legend(['accuracy'])
 # %%
