@@ -35,3 +35,8 @@ plt.title('accuracy')
 plt.xlabel('epoch')
 plt.legend(['accuracy'])
 # %%
+plt.plot(h.history['loss'])
+plt.title('loss')
+plt.xlabel('epoch')
+plt.legend(['loss'])
+# %%
