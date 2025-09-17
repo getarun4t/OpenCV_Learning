@@ -1,3 +1,10 @@
+'''
+Things done:
+1. Randomly plotted some data
+2. Trained a model using the data by creating a decision boundary
+3. Based on the model, predict future inputs
+'''
+
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,4 +46,28 @@ plt.plot(h.history['loss'])
 plt.title('loss')
 plt.xlabel('epoch')
 plt.legend(['loss'])
+# %%
+#Plot the result
+# -1 and +1 for tolerance - makes data more spacious
+def plot_decision_boundary(X, Y, model):
+    x_span = np.linspace(min(X[:, 0]) - 1, max(X[:, 0]) + 1)
+    y_span = np.linspace(min(X[:, 1]) - 1, max(X[:, 1]) + 1)
+    # square 2d array in numpy mesh grid func
+    # returns 2 2d 50*50 matrix for each span 
+    xx, yy = np.meshgrid(x_span, y_span)
+    # converting to 1d because currently every y coordinate has 50 x coordinates
+    # so converting to columnwise to concantenate
+    xx_, yy_ = xx.ravel(), yy.ravel()
+    grid = np.c_[xx_, yy_]
+    # returns array of predictions with probability of returning 1 or 0
+    pred_func = model.predict(grid)
+    z = pred_func.reshape(xx.shape)
+    # plotting contour 
+    plt.contourf(xx, yy, z)
+    plt.scatter(X[:n_pts,0], X[:n_pts,1])
+    plt.scatter(X[n_pts:,0], X[n_pts:,1])
+    
+
+# %%
+plot_decision_boundary(X, Y, model)
 # %%
