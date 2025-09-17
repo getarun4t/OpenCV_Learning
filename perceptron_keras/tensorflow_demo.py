@@ -66,7 +66,14 @@ def plot_decision_boundary(X, Y, model):
     plt.contourf(xx, yy, z)
     plt.scatter(X[:n_pts,0], X[:n_pts,1])
     plt.scatter(X[n_pts:,0], X[n_pts:,1])
-    
+
+    # Test input and predicting
+    x = 7.5
+    y = 5
+    point = np.array([[x, y]])
+    prediction = model.predict(point)
+    plt.plot([x], [y], marker = "o", markersize = 10, color = "red")
+    print ("Prediction is : ", prediction)    
 
 # %%
 plot_decision_boundary(X, Y, model)
