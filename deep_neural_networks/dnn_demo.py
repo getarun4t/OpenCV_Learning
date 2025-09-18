@@ -39,5 +39,17 @@ model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.01), me
 # verbose ensures that feedback in screen is given
 # epoch defines how many datapoints are handled in 1 iteration
 # shuffle ensures that model doesn't get stuck in absolute minimum
-model.fit(x=X, y=y, verbose=1, batch_size=20, epochs=100, shuffle='true')
+h = model.fit(x=X, y=y, verbose=1, batch_size=20, epochs=100, shuffle='true')
+# %%
+# Plotting the accuracy values
+plt.plot(h.history['accuracy'])
+plt.xlabel('epoch')
+plt.legend(['accuracy'])
+plt.title('accuracy')
+# %%
+# Plotting the loss values
+plt.plot(h.history['loss'])
+plt.xlabel('epoch')
+plt.legend(['loss'])
+plt.title('loss')
 # %%
