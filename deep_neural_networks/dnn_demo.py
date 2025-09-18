@@ -35,7 +35,9 @@ model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=0.01), metrics=['accuracy'])
 
 # %%
-#Train a model to fit our data
+# Train a model to fit our data
 # verbose ensures that feedback in screen is given
 # epoch defines how many datapoints are handled in 1 iteration
-model.fit(x=X, y=y, verbose=1, batch_size=40)
+# shuffle ensures that model doesn't get stuck in absolute minimum
+model.fit(x=X, y=y, verbose=1, batch_size=20, epochs=100, shuffle='true')
+# %%
