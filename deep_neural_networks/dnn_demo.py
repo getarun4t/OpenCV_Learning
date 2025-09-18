@@ -53,6 +53,7 @@ plt.xlabel('epoch')
 plt.legend(['loss'])
 plt.title('loss')
 # %%
+# Decision boundary func
 def plot_decision_boundary(X, Y, model):
     x_span = np.linspace(min(X[:, 0]) - 0.25, max(X[:, 0]) + 0.25)
     y_span = np.linspace(min(X[:, 1]) - 0.25, max(X[:, 1]) + 0.25)
@@ -69,9 +70,22 @@ def plot_decision_boundary(X, Y, model):
     # plotting contour, represents probability as contours 
     plt.contourf(xx, yy, z)
 
+# %%
 # Plotting the decision boundary
 plot_decision_boundary(X, y, model)
 # Plotting the data
 plt.scatter(X[:n_pts, 0], X[:n_pts, 1])
 plt.scatter(X[n_pts:, 0], X[n_pts:, 1])
+# %%
+# Predicting the value
+plot_decision_boundary(X, y, model)
+# Plotting the data
+plt.scatter(X[:n_pts, 0], X[:n_pts, 1])
+plt.scatter(X[n_pts:, 0], X[n_pts:, 1])
+x= 0.1
+y = 0
+point = np.array([[x,y]])
+prediction = model.predict(point)
+plt.plot([x], [y], marker='o', markersize = 10, color = 'red')
+print("Prediction is : ", prediction)
 # %%
