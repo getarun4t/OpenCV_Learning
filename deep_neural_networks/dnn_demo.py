@@ -17,3 +17,9 @@ X, y = datasets.make_circles(n_samples=n_pts, random_state=123, noise=0.1, facto
 print(X)
 print(y)
 # %%
+# Plotting outer region
+plt.scatter(X[y==0, 0], X[y==0, 1])
+# Plotting inner region
+plt.scatter(X[y==1, 0], X[y==1, 1])
+
+# %%
