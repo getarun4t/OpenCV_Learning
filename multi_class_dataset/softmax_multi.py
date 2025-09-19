@@ -5,6 +5,7 @@ from sklearn import datasets
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
+from keras.utils import to_categorical
 # %%
 # Setting number of data points
 n_pts = 500
@@ -19,4 +20,16 @@ plt.scatter(X[y==0, 0], X[y==0, 1])
 plt.scatter(X[y==1, 0], X[y==1, 1])
 plt.scatter(X[y==2, 0], X[y==2, 1])
 # %%
-# Hot encoding, eliminates unnecessary relations b/w datasets
+# Hot encoding-> eliminates unnecessary relations b/w datasets
+# 3 is number of data classes
+y_cat = to_categorical(y, 3)
+print("y= " , y_cat)
+
+# %%
+model = Sequential()
+model.add(Dense(units=3, input_shape =(2,), activation="softmax"))
+model.compile(Adam(0.1), loss="categorical_crossentropy", metrics=['accuracy'])
+
+# %%
+model.fit(x=X, y=y_cat, verbose=1, batch_size=50, epochs=100)
+# %%
