@@ -50,4 +50,19 @@ for i in range(cols):
         axis[j][i].axis("off")
         if i == 2:
             axis[j][i].set_title(str(j))
+            num_of_samples.append(len(x_selected))
+
 # %%
+#Visualize class distribution 
+print(num_of_samples)
+plt.figure(figsize=(12, 4))
+plt.bar(range(0, num_of_classes), num_of_samples)
+plt.title("Distribution of the training dataset")
+plt.xlabel("Class number")
+plt.ylabel("Number of images")
+
+# %%
+# One hot encoding
+# Ensures that independent label for each class
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
