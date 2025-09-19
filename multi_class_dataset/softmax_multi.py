@@ -33,3 +33,31 @@ model.compile(Adam(0.1), loss="categorical_crossentropy", metrics=['accuracy'])
 # %%
 model.fit(x=X, y=y_cat, verbose=1, batch_size=50, epochs=100)
 # %%
+# Decision boundary func
+def plot_decision_boundary(X, y_cat, model):
+    x_span = np.linspace(min(X[:, 0]) - 1, max(X[:, 0]) + 1)
+    y_span = np.linspace(min(X[:, 1]) - 1, max(X[:, 1]) + 1)
+    # square 2d array in numpy mesh grid func
+    # returns 2 2d 50*50 matrix for each span 
+    xx, yy = np.meshgrid(x_span, y_span)
+    # converting to 1d because currently every y coordinate has 50 x coordinates
+    # so converting to columnwise to concantenate
+    xx_, yy_ = xx.ravel(), yy.ravel()
+    grid = np.c_[xx_, yy_]
+    # returns array of predictions with probability of returning 1 or 0
+    # predict_classes specifically for multi class
+    # Instead of predict_classes (deprecated), use predict + argmax
+    pred_probs = model.predict(grid)
+    pred_func = np.argmax(pred_probs, axis=1)
+    z = pred_func.reshape(xx.shape)
+    # plotting contour, represents probability as contours 
+    plt.contourf(xx, yy, z)
+
+# %%
+# Plotting the decision boundary
+plot_decision_boundary(X, y_cat, model)
+# Plotting the data
+plt.scatter(X[y==0, 0], X[y==0, 1])
+plt.scatter(X[y==1, 0], X[y==1, 1])
+plt.scatter(X[y==2, 0], X[y==2, 1])
+# %%
