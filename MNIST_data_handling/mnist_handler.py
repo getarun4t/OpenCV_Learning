@@ -66,3 +66,10 @@ plt.ylabel("Number of images")
 # Ensures that independent label for each class
 y_train = to_categorical(y_train, 10)
 y_test = to_categorical(y_test, 10)
+
+#%%
+#Normalizing the data
+# Max pixel intensity of 255 gets normalized to b/w 0 and 1
+# Decreases variance b/w data
+X_train = X_train/255
+X-test = X_test/255
