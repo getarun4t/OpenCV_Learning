@@ -38,4 +38,16 @@ cols = 5
 num_of_classes = 10
 
 fig, axis = plt.subplots(nrows=num_of_classes, ncols=cols, figsize=(5, 10))
+fig.tight_layout()
+
+#fill the cells
+for i in range(cols):
+    for j in range (num_of_classes):
+        x_selected = X_train[y_train==j]
+        # Access random image from jth category for the cell
+        # Ensuring grey scale
+        axis[j][i].imshow(x_selected[random.randint(0, len(x_selected)-1)],cmap=plt.get_cmap("grey"))
+        axis[j][i].axis("off")
+        if i == 2:
+            axis[j][i].set_title(str(j))
 # %%
