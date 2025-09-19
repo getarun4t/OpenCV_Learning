@@ -61,3 +61,15 @@ plt.scatter(X[y==0, 0], X[y==0, 1])
 plt.scatter(X[y==1, 0], X[y==1, 1])
 plt.scatter(X[y==2, 0], X[y==2, 1])
 # %%
+# Replotting with test input
+plot_decision_boundary(X, y_cat, model)
+plt.scatter(X[y==0, 0], X[y==0, 1])
+plt.scatter(X[y==1, 0], X[y==1, 1])
+plt.scatter(X[y==2, 0], X[y==2, 1])
+x = 0.5
+y = 0.5
+point = np.array([[x, y]])
+prediction = np.argmax(model.predict(point), axis=1)
+plt.plot([x], [y], marker = 'o', markersize=10, color = 'b')
+print("Prediction is ", prediction)
+# %%
