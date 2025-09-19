@@ -9,7 +9,8 @@ from keras.utils import to_categorical
 # %%
 # Setting number of data points
 n_pts = 500
-centers = [[-1, 1], [-1, -1], [1, -1]]
+# Specifying centers of data points
+centers = [[-1, 1], [-1, -1], [1, -1], [1, 1], [0, 0]]
 # random_state allows to get same random data on rerun
 X, y = datasets.make_blobs(n_samples=n_pts, random_state=123, centers=centers, cluster_std= 0.4)
 print(X)
@@ -19,15 +20,17 @@ print(y)
 plt.scatter(X[y==0, 0], X[y==0, 1])
 plt.scatter(X[y==1, 0], X[y==1, 1])
 plt.scatter(X[y==2, 0], X[y==2, 1])
+plt.scatter(X[y==3, 0], X[y==3, 1])
+plt.scatter(X[y==4, 0], X[y==4, 1])
 # %%
 # Hot encoding-> eliminates unnecessary relations b/w datasets
 # 3 is number of data classes
-y_cat = to_categorical(y, 3)
+y_cat = to_categorical(y, 5)
 print("y= " , y_cat)
 
 # %%
 model = Sequential()
-model.add(Dense(units=3, input_shape =(2,), activation="softmax"))
+model.add(Dense(units=5, input_shape =(2,), activation="softmax"))
 model.compile(Adam(0.1), loss="categorical_crossentropy", metrics=['accuracy'])
 
 # %%
@@ -60,14 +63,18 @@ plot_decision_boundary(X, y_cat, model)
 plt.scatter(X[y==0, 0], X[y==0, 1])
 plt.scatter(X[y==1, 0], X[y==1, 1])
 plt.scatter(X[y==2, 0], X[y==2, 1])
+plt.scatter(X[y==3, 0], X[y==3, 1])
+plt.scatter(X[y==4, 0], X[y==4, 1])
 # %%
 # Replotting with test input
 plot_decision_boundary(X, y_cat, model)
 plt.scatter(X[y==0, 0], X[y==0, 1])
 plt.scatter(X[y==1, 0], X[y==1, 1])
 plt.scatter(X[y==2, 0], X[y==2, 1])
+plt.scatter(X[y==3, 0], X[y==3, 1])
+plt.scatter(X[y==4, 0], X[y==4, 1])
 x = 0.5
-y = 0.5
+y = -0.5
 point = np.array([[x, y]])
 prediction = np.argmax(model.predict(point), axis=1)
 plt.plot([x], [y], marker = 'o', markersize=10, color = 'b')
