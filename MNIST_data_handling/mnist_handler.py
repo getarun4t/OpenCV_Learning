@@ -7,5 +7,7 @@ from keras.optimizers import Adam
 # Importing mnist data set
 from keras.datasets import mnist
 from keras.utils import to_categorical
+import random
 
 # %%
+np.random.seed(0)
