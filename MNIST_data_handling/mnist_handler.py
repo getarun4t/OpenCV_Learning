@@ -108,4 +108,7 @@ print(model.summary())
 # %%
 # Training data
 # All labels are in y_train
-model.fit(X_train, y_train)
+history = model.fit(X_train, y_train, validation_split=0.1, epochs = 10, batch_size=200, verbose=1, shuffle=1)
+
+# %%
+# Plotting the data
