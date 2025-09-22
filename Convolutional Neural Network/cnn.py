@@ -8,6 +8,10 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.utils import to_categorical
+# Adding headers for CNN
+from keras.layers import Flatten
+from keras.layers import Conv2D
+from keras.layers import MaxPooling2D
 import random
 
 
