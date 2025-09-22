@@ -1,4 +1,5 @@
 # %%
+import requests
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
@@ -126,5 +127,11 @@ plt.legend(['accuracy', 'val_accuracy'])
 plt.title('Accuracy')
 plt.xlabel('epoch')
 
-
 # %%
+# Testing the model
+score = model.evaluate(X_test, y_test, verbose=0)
+print(type(score))
+print('Test Score of Deep Neural Networks: ', score[0])
+print('Test Accruacy of Deep Neural Networks: ', score[1])
+# %%
+
