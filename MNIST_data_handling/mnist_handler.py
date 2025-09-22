@@ -111,4 +111,20 @@ print(model.summary())
 history = model.fit(X_train, y_train, validation_split=0.1, epochs = 10, batch_size=200, verbose=1, shuffle=1)
 
 # %%
-# Plotting the data
+# Plotting the loss data
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['loss', 'val_loss'])
+plt.title('Loss')
+plt.xlabel('epoch')
+
+# %%
+# Plotting the accuracy data
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.legend(['accuracy', 'val_accuracy'])
+plt.title('Accuracy')
+plt.xlabel('epoch')
+
+
+# %%
