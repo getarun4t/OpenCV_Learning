@@ -72,4 +72,40 @@ y_test = to_categorical(y_test, 10)
 # Max pixel intensity of 255 gets normalized to b/w 0 and 1
 # Decreases variance b/w data
 X_train = X_train/255
-X-test = X_test/255
+X_test = X_test/255
+
+#%%
+# Define the pixels
+num_pixels = 784
+X_train = X_train.reshape(X_train.shape[0], num_pixels)
+print(X_train.shape)
+X_test = X_test.reshape(X_test.shape[0], num_pixels)
+print(X_test.shape)
+
+
+# %%
+#Implementing with Regular Deep Neural Network
+def create_model():
+    model = Sequential()
+    # More hidden layers will result in overfitting
+    # Relu activation function is non-linear
+    # Relu performs better for convolution
+    model.add(Dense(10, input_dim = num_pixels, activation="relu"))
+    model.add(Dense(10, activation='relu'))
+    # Softmax converts all scores to probabilities
+    model.add(Dense(num_of_classes, activation='softmax'))
+    model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
+#%%
+# Calling and printing the model
+# First layer has 7850 bias and weights
+# Computational power required while using DNN is very high for larger images
+# Hence we need to use convolutional neural network
+model = create_model()
+print(model.summary())
+
+# %%
+# Training data
+# All labels are in y_train
+model.fit(X_train, y_train)
