@@ -71,3 +71,47 @@ X_train = X_train/255
 X_test = X_test/255
 
 # %%
+# Define LeNet Model
+def leNet_model():
+   model = Sequential()
+   # Convolutional Layer
+   # 30 filters is good
+   # 5,5 is filter matrix size
+   # 28, 28, 1 is filter shape (3d matrix)
+   # strides - translation of the kernel
+   # padding - preserves spatial size of i/p
+   # padding ensures o/p size same as i/p, to be used only if outer edges of image is imp
+   model.add(Conv2D(30, (5, 5), input_shape = (28, 28, 1), activation='relu'))
+   # Pooling layer
+   # size is scaled down by half
+   model.add(MaxPooling2D(pool_size=(2, 2)))
+   # Second Conv layer
+   # Smaller filter because image is now smaller
+   # No input_shape as it is not the first layer
+   # Each image scaled down to 10,10,15
+   # Depth increases but image size reduces
+   model.add(Conv2D(15, (3,3), activation='relu'))
+   # Second pooling layer
+   # Reduces size to 5,5,15
+   model.add(MaxPooling2D(pool_size=(2, 2)))
+   # Flattening the image
+   # Doesn't require any param
+   # Image has to be 1D before adding to perceptrons
+   # Output is a 1D array of shape 375
+   model.add(Flatten())
+   # Fully Connected Layer
+   # Dense layer
+   model.add(Dense(500, activation='relu'))
+   # Output layer
+   # Activation is softmax so as to classify between different classes
+   model.add(Dense(num_classes, activation='softmax'))
+   # Optimizer
+   model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+   return model
+
+#%%
+# Running the model
+model = leNet_model()
+# Train the model
+# shuffle = 1 ensures data is shuffled during training
+history = model.fit(X_train, y_train, epochs=10, validation_split=0.1, batch_size=400, verbose=1, shuffle=1)
