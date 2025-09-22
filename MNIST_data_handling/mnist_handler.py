@@ -175,4 +175,5 @@ prediction_class = np.argmax(predictions, axis=1)
 print("Prediction: ", str(prediction_class))
 
 # If prediction is not correct, try adding depth
+# More efficient approach, use convolutional neural network
 # %%
