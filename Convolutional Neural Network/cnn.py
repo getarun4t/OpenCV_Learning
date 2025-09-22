@@ -115,4 +115,21 @@ model = leNet_model()
 # Train the model
 # shuffle = 1 ensures data is shuffled during training
 history = model.fit(X_train, y_train, epochs=10, validation_split=0.1, batch_size=400, verbose=1, shuffle=1)
+
+# %%
+# Plotting the loss data
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['loss', 'val_loss'])
+plt.title('Loss')
+plt.xlabel('epoch')
+
+# %%
+# Plotting the accuracy data
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.legend(['accuracy', 'val_accuracy'])
+plt.title('Accuracy')
+plt.xlabel('epoch')
+
 # %%
