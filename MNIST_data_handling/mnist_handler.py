@@ -1,5 +1,7 @@
 # %%
+# Header files
 import requests
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
@@ -8,6 +10,8 @@ from keras.optimizers import Adam
 # Importing mnist data set
 from keras.datasets import mnist
 from keras.utils import to_categorical
+# Get Image module from Python Image Library
+from PIL import Image
 import random
 
 # %%
@@ -134,4 +138,41 @@ print(type(score))
 print('Test Score of Deep Neural Networks: ', score[0])
 print('Test Accruacy of Deep Neural Networks: ', score[1])
 # %%
+# Test with image from web
+# Getting the image from web
+url = "https://colah.github.io/posts/2014-10-Visualizing-MNIST/img/mnist_pca/MNIST-p1815-4.png"
+response = requests.get(url, stream=True)
+print(response)
+#Getting the raw image
+img = Image.open(response.raw)
+plt.imshow(img)
 
+# %%
+# Image handling
+# Getting and resizing 28 * 28 image array
+img_array = np.asarray(img)
+print(img_array.shape)
+# Resizing to 28*28
+img_resized = cv2.resize(img_array, (28, 28))
+print(img_resized.shape)
+# Changing image to greyscale
+img_grey_scale = cv2.cvtColor(img_resized, cv2.COLOR_BGR2GRAY)
+plt.imshow(img_grey_scale, cmap=plt.get_cmap("grey"))
+# Inverting the image to white image and black background
+image = cv2.bitwise_not(img_grey_scale)
+plt.imshow(image, cmap=plt.get_cmap("grey"))
+
+# %%
+# Normalizing the image
+image = image/255
+image = image.reshape(1, 784)
+print(image)
+
+# %%
+#Predicting the image
+predictions = model.predict(image)
+prediction_class = np.argmax(predictions, axis=1)
+print("Prediction: ", str(prediction_class))
+
+# If prediction is not correct, try adding depth
+# %%
