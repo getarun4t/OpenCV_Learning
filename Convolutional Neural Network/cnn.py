@@ -14,6 +14,7 @@ from keras.layers import Flatten
 from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Dropout
+from keras.models import Model
 # Get Image module from Python Image Library
 from PIL import Image
 import random
@@ -184,4 +185,29 @@ print(type(score))
 print('Test Score of Convolutional Neural Networks: ', score[0])
 print('Test Accruacy of Convolutional Neural Networks: ', score[1])
 
+# %%
+# Defining each convolutional layer for visualizing
+# Model class API prints exactly when conv layers are seeing when running model
+layer1 = Model(model.layers[0].input, model.layers[0].output)
+layer2 = Model(model.layers[0].input, model.layers[2].output)
+visual_layer1, visual_layer2 = layer1.predict(image), layer2.predict(image)
+print(visual_layer1.shape)
+print(visual_layer2.shape)
+
+# %%
+# Plotting output of layer 1
+plt.figure(figsize=(10, 6))
+for i in range (30):
+   plt.subplot(6, 5, i+1)
+   # Plotting the image, splicing
+   plt.imshow(visual_layer1[0, :, :, i], cmap=plt.get_cmap('jet'))
+   plt.axis('off')
+
+# %%
+plt.figure(figsize=(10, 6))
+for i in range (15):
+   plt.subplot(3, 5, i+1)
+   # Plotting the image, splicing
+   plt.imshow(visual_layer2[0, :, :, i], cmap=plt.get_cmap('jet'))
+   plt.axis('off')
 # %%
