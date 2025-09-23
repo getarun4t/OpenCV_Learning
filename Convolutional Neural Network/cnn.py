@@ -13,6 +13,7 @@ from keras.utils import to_categorical
 from keras.layers import Flatten
 from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
+from keras.layers import Dropout
 # Get Image module from Python Image Library
 from PIL import Image
 import random
@@ -105,6 +106,11 @@ def leNet_model():
    # Fully Connected Layer
    # Dense layer
    model.add(Dense(500, activation='relu'))
+   # Dropout layer
+   # Can be placed anywhere
+   # Used to prevent overfitting
+   # 0.5 is the rate suggested by researchers fir dropout layer
+   model.add(Dropout(rate=0.5,))
    # Output layer
    # Activation is softmax so as to classify between different classes
    model.add(Dense(num_classes, activation='softmax'))
@@ -177,4 +183,5 @@ score = model.evaluate(X_test, y_test, verbose=0)
 print(type(score))
 print('Test Score of Convolutional Neural Networks: ', score[0])
 print('Test Accruacy of Convolutional Neural Networks: ', score[1])
+
 # %%
