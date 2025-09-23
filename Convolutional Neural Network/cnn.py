@@ -170,4 +170,11 @@ print(image)
 predictions = model.predict(image)
 prediction_class = np.argmax(predictions, axis=1)
 print("Prediction: ", str(prediction_class))
+
+# %%
+# Checking accuracy
+score = model.evaluate(X_test, y_test, verbose=0)
+print(type(score))
+print('Test Score of Convolutional Neural Networks: ', score[0])
+print('Test Accruacy of Convolutional Neural Networks: ', score[1])
 # %%
