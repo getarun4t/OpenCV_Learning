@@ -109,7 +109,7 @@ def greyscale(img):
     return img
 
 img = greyscale(X_train[1000])
-plt.imshow(img)
+plt.imshow(img, )
 plt.axis("off")
 print(img.shape)
 
@@ -126,4 +126,18 @@ img = hist_equalize(img)
 plt.imshow(img)
 plt.axis("off")
 print(img.shape)
+
+# %%
+# Preprocessing all the images
+def preprocessing(img):
+    img = greyscale(img)
+    img = hist_equalize(img)
+    # Normalizing the image to pixel value 255
+    img = img/255
+    return img
+
+# Iterating through entire list of 
+X_train = np.array(list(map(preprocessing, X_train)))
+X_test = np.array(list(map(preprocessing, X_test)))
+X_val = np.array(list(map(preprocessing, X_val)))
 # %%
