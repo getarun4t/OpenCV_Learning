@@ -205,3 +205,7 @@ def leNet_model():
     # Output layer
     # Activation is softmax so as to classify between different classes
     model.add(Dense(num_of_classes, activation='softmax'))
+    # Optimizer
+    # Adam Optimizer for compiling
+    model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
