@@ -201,7 +201,7 @@ def leNet_model():
     # Can be placed anywhere
     # Used to prevent overfitting
     # 0.5 is the rate suggested by researchers fir dropout layer
-    model.add(Dropout(rate=0.5,))
+    model.add(Dropout(rate=0.5))
     # Output layer
     # Activation is softmax so as to classify between different classes
     model.add(Dense(num_of_classes, activation='softmax'))
