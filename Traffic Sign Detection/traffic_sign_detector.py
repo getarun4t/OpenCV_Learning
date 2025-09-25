@@ -163,7 +163,8 @@ y_val = to_categorical(y_val, 43)
 
 # %%
 # Designing a Convoluitonal Neural Network
-def leNet_model():
+# Adding extra convolutional layer increases accuracy
+def modified_model():
     model = Sequential()
     # Convolutional Layer
     # 30 filters is good
@@ -172,7 +173,13 @@ def leNet_model():
     # strides - translation of the kernel
     # padding - preserves spatial size of i/p
     # padding ensures o/p size same as i/p, to be used only if outer edges of image is imp
-    model.add(Conv2D(30, (5, 5), input_shape = (32, 32, 1), activation='relu'))
+    # Increasing number of filters improves accuracy
+    model.add(Conv2D(60, (5, 5), input_shape = (32, 32, 1), activation='relu'))
+
+    ## ADDITIONAL LAYER FOR INCREASING ACCURACY
+    # Additional Convolutional Layer 1
+    model.add(Conv2D(60, (5, 5),  activation='relu'))
+    
     # Pooling layer
     # size is scaled down by half
     # Pooling doesn't affect depth
@@ -183,10 +190,21 @@ def leNet_model():
     # Each image scaled down to 10,10,15
     # Depth increases but image size reduces
     # Output of layer woulf be 12, 12 with depth 15
-    model.add(Conv2D(15, (3,3), activation='relu'))
+    model.add(Conv2D(30, (3,3), activation='relu'))
+    
+    ## ADDITIONAL LAYER FOR INCREASING ACCURACY
+    # Additional Convolutional Layer 2
+    model.add(Conv2D(30, (3, 3),  activation='relu'))
+    
     # Second pooling layer
     # Reduces size to 5,5,15
     model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    ## ADDITIONAL LAYER FOR REDUCING OVERFITTING
+    # Dropout layer 2
+    model.add(Dropout(rate=0.5))
+
+
     # Flattening the image
     # Doesn't require any param
     # Image has to be 1D before adding to perceptrons
@@ -207,10 +225,11 @@ def leNet_model():
     model.add(Dense(num_of_classes, activation='softmax'))
     # Optimizer
     # Adam Optimizer for compiling
-    model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+    # Lower learning rate helps model to learn more accurately when complex data is involved
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
-model = leNet_model()
+model = modified_model()
 print(model.summary())
 
 # %%
@@ -239,4 +258,6 @@ score = model.evaluate(X_test, y_test, verbose=0)
 
 print('Test Score : ', score[0])
 print('Test Accuracy : ', score[1])
+
 # %%
+# Fine Tuning the model
