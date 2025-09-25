@@ -199,6 +199,12 @@ def modified_model():
     # Second pooling layer
     # Reduces size to 5,5,15
     model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    ## ADDITIONAL LAYER FOR REDUCING OVERFITTING
+    # Dropout layer 2
+    model.add(Dropout(rate=0.5))
+
+
     # Flattening the image
     # Doesn't require any param
     # Image has to be 1D before adding to perceptrons
