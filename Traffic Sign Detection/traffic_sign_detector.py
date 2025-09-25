@@ -1,6 +1,7 @@
 #%%
 # Headers
 import cv2
+import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -15,6 +16,9 @@ from keras.optimizers import Adam
 from keras.utils import to_categorical
 from keras.layers import Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from PIL import Image
+
 
 # %%
 # Seed data
@@ -161,6 +165,28 @@ y_train = to_categorical(y_train, 43)
 y_test = to_categorical(y_test, 43)
 y_val = to_categorical(y_val, 43)
 
+#%%
+#Image augmentation techniques
+# Will run only when requested
+datagen = ImageDataGenerator(width_shift_range=0.1,
+                   height_shift_range=0.1,
+                   zoom_range=0.2,
+                   shear_range=0.1,
+                   rotation_range=10)
+datagen.fit(X_train)
+
+#%%
+# Creating an iterator for augmenting images
+batches = datagen.flow(X_train, y_train, batch_size=20)
+X_batch, y_batch = next(batches)
+# Plotting the images
+fig, axis = plt.subplots(1, 15, figsize=(20, 5))
+fig.tight_layout()
+
+for i in range (15):
+    axis[i].imshow(X_batch[i].reshape(32, 32))
+    axis[i].axis("off")
+
 # %%
 # Designing a Convoluitonal Neural Network
 # Adding extra convolutional layer increases accuracy
@@ -202,8 +228,8 @@ def modified_model():
 
     ## ADDITIONAL LAYER FOR REDUCING OVERFITTING
     # Dropout layer 2
-    model.add(Dropout(rate=0.5))
-
+    ## model.add(Dropout(rate=0.5))
+    ## Commenting additional drop out layer during image augmentation
 
     # Flattening the image
     # Doesn't require any param
@@ -234,7 +260,13 @@ print(model.summary())
 
 # %%
 # Training the model
-history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+# steps_per_epoch = size of augmented dataset
+model.fit(datagen.flow(X_train, y_train, batch_size=50),
+          steps_per_epoch=2000,
+          epochs=10,
+          validation_data=(X_val, y_val),
+          shuffle=True)
+
 
 # %%
 # Plotting Loss
@@ -260,4 +292,25 @@ print('Test Score : ', score[0])
 print('Test Accuracy : ', score[1])
 
 # %%
-# Fine Tuning the model
+# Fetch test image
+url = 'https://c8.alamy.com/comp/J2MRAJ/german-road-sign-bicycles-crossing-J2MRAJ.jpg'
+r = requests.get(url, stream=True)
+img = Image.open(r.raw)
+plt.imshow(img, cmap=plt.get_cmap('gray'))
+
+#Preprocess image
+img = np.asarray(img)
+img = cv2.resize(img, (32, 32))
+img = preprocessing(img)
+print(img.shape)
+ 
+#Reshape reshape
+img = img.reshape(1, 32, 32, 1)
+print(img.shape)
+
+#Test image
+pred = model.predict(img)
+pred_class = np.argmax(pred, axis=1)
+
+print("Predicted sign:", pred_class[0])
+# %%
