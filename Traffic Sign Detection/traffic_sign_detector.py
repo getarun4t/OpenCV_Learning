@@ -192,3 +192,8 @@ def leNet_model():
     # Image has to be 1D before adding to perceptrons
     # Output is a 1D array of shape 375
     model.add(Flatten())
+    # Fully Connected Layer
+    # Dense layer
+    # 500 is arbitrary
+    # small number gives less accuracy, high --> high computing
+    model.add(Dense(500, activation='relu'))
