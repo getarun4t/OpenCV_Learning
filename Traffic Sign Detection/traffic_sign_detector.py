@@ -1,6 +1,7 @@
 #%%
 # Headers
 import cv2
+import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -15,6 +16,8 @@ from keras.optimizers import Adam
 from keras.utils import to_categorical
 from keras.layers import Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from PIL import Image
+
 
 # %%
 # Seed data
@@ -260,4 +263,28 @@ print('Test Score : ', score[0])
 print('Test Accuracy : ', score[1])
 
 # %%
-# Fine Tuning the model
+# Fetch test image
+url = 'https://c8.alamy.com/comp/G667W0/road-sign-speed-limit-30-kmh-zone-passau-bavaria-germany-G667W0.jpg'
+r = requests.get(url, stream=True)
+img = Image.open(r.raw)
+plt.imshow(img, cmap=plt.get_cmap('gray'))
+# %%
+#Preprocess image
+img = np.asarray(img)
+img = cv2.resize(img, (32, 32))
+img = preprocessing(img)
+plt.imshow(img, cmap = plt.get_cmap('gray'))
+print(img.shape)
+ 
+#%%
+#Reshape reshape
+img = img.reshape(1, 32, 32, 1)
+print(img.shape)
+
+#%% 
+#Test image
+pred = model.predict(img)
+pred_class = np.argmax(pred, axis=1)
+
+print("Predicted sign:", pred_class[0])
+# %%
