@@ -145,6 +145,26 @@ X_train = np.array(list(map(preprocessing, X_train)))
 X_test = np.array(list(map(preprocessing, X_test)))
 X_val = np.array(list(map(preprocessing, X_val)))
 
+# %%
+# Randomly plotting a processed image
+# cmap=plt.cm.binary used to force imshow to plot greyscale
+plt.imshow(X_train[random.randint(0, len(X_train)-1)], cmap=plt.cm.binary)
+plt.axis("off")
+print(X_train.shape)
+
+# %%
+# Making the image 1D
+X_train = X_train.reshape(34799, 32, 32, 1)
+X_test = X_test.reshape(12630, 32, 32, 1)
+X_val = X_val.reshape(4410, 32, 32, 1)
+
+print(X_train.shape)
+# %%
+# One hot encoding the data
+y_train = to_categorical(y_train, 43)
+y_test = to_categorical(y_test, 43)
+y_val = to_categorical(y_val, 43)
+
 #%%
 #Image augmentation techniques
 # Will run only when requested
@@ -166,26 +186,6 @@ fig.tight_layout()
 for i in range (15):
     axis[i].imshow(X_batch[i].reshape(32, 32))
     axis[i].axis("off")
-
-# %%
-# Randomly plotting a processed image
-# cmap=plt.cm.binary used to force imshow to plot greyscale
-plt.imshow(X_train[random.randint(0, len(X_train)-1)], cmap=plt.cm.binary)
-plt.axis("off")
-print(X_train.shape)
-
-# %%
-# Making the image 1D
-X_train = X_train.reshape(34799, 32, 32, 1)
-X_test = X_test.reshape(12630, 32, 32, 1)
-X_val = X_val.reshape(4410, 32, 32, 1)
-
-print(X_train.shape)
-# %%
-# One hot encoding the data
-y_train = to_categorical(y_train, 43)
-y_test = to_categorical(y_test, 43)
-y_val = to_categorical(y_val, 43)
 
 # %%
 # Designing a Convoluitonal Neural Network
@@ -228,8 +228,8 @@ def modified_model():
 
     ## ADDITIONAL LAYER FOR REDUCING OVERFITTING
     # Dropout layer 2
-    model.add(Dropout(rate=0.5))
-
+    ## model.add(Dropout(rate=0.5))
+    ## Commenting additional drop out layer during image augmentation
 
     # Flattening the image
     # Doesn't require any param
@@ -260,7 +260,13 @@ print(model.summary())
 
 # %%
 # Training the model
-history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+# steps_per_epoch = size of augmented dataset
+model.fit(datagen.flow(X_train, y_train, batch_size=50),
+          steps_per_epoch=2000,
+          epochs=10,
+          validation_data=(X_val, y_val),
+          shuffle=True)
+
 
 # %%
 # Plotting Loss
