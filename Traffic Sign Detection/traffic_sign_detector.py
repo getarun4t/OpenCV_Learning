@@ -197,3 +197,8 @@ def leNet_model():
     # 500 is arbitrary
     # small number gives less accuracy, high --> high computing
     model.add(Dense(500, activation='relu'))
+    # Dropout layer
+    # Can be placed anywhere
+    # Used to prevent overfitting
+    # 0.5 is the rate suggested by researchers fir dropout layer
+    model.add(Dropout(rate=0.5,))
