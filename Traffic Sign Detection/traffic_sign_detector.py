@@ -160,4 +160,83 @@ print(X_train.shape)
 y_train = to_categorical(y_train, 43)
 y_test = to_categorical(y_test, 43)
 y_val = to_categorical(y_val, 43)
+
+# %%
+# Designing a Convoluitonal Neural Network
+def leNet_model():
+    model = Sequential()
+    # Convolutional Layer
+    # 30 filters is good
+    # 5,5 is filter matrix size
+    # 32, 32, 1 is filter shape (3d matrix)
+    # strides - translation of the kernel
+    # padding - preserves spatial size of i/p
+    # padding ensures o/p size same as i/p, to be used only if outer edges of image is imp
+    model.add(Conv2D(30, (5, 5), input_shape = (32, 32, 1), activation='relu'))
+    # Pooling layer
+    # size is scaled down by half
+    # Pooling doesn't affect depth
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Second Conv layer
+    # Smaller filter because image is now smaller
+    # No input_shape as it is not the first layer
+    # Each image scaled down to 10,10,15
+    # Depth increases but image size reduces
+    # Output of layer woulf be 12, 12 with depth 15
+    model.add(Conv2D(15, (3,3), activation='relu'))
+    # Second pooling layer
+    # Reduces size to 5,5,15
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Flattening the image
+    # Doesn't require any param
+    # Image has to be 1D before adding to perceptrons
+    # Output is a 1D array of shape 375
+    model.add(Flatten())
+    # Fully Connected Layer
+    # Dense layer
+    # 500 is arbitrary
+    # small number gives less accuracy, high --> high computing
+    model.add(Dense(500, activation='relu'))
+    # Dropout layer
+    # Can be placed anywhere
+    # Used to prevent overfitting
+    # 0.5 is the rate suggested by researchers fir dropout layer
+    model.add(Dropout(rate=0.5))
+    # Output layer
+    # Activation is softmax so as to classify between different classes
+    model.add(Dense(num_of_classes, activation='softmax'))
+    # Optimizer
+    # Adam Optimizer for compiling
+    model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
+model = leNet_model()
+print(model.summary())
+
+# %%
+# Training the model
+history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+
+# %%
+# Plotting Loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['training', 'validation'])
+plt.title("Loss")
+plt.xlabel('epoch')
+
+#%%
+# Plotting Accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.legend(['training', 'validation'])
+plt.title("Accuracy")
+plt.xlabel('epoch')
+
+# %%
+# Evaluting model with test data
+score = model.evaluate(X_test, y_test, verbose=0)
+
+print('Test Score : ', score[0])
+print('Test Accuracy : ', score[1])
 # %%
