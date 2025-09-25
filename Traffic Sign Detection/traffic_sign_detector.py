@@ -207,6 +207,7 @@ def leNet_model():
     model.add(Dense(num_of_classes, activation='softmax'))
     # Optimizer
     # Adam Optimizer for compiling
+    # Lower learning rate helps model to learn more accurately when complex data is involved
     model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
@@ -239,4 +240,6 @@ score = model.evaluate(X_test, y_test, verbose=0)
 
 print('Test Score : ', score[0])
 print('Test Accuracy : ', score[1])
+
 # %%
+# Fine Tuning the model
