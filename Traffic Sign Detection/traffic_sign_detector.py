@@ -187,3 +187,8 @@ def leNet_model():
     # Second pooling layer
     # Reduces size to 5,5,15
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Flattening the image
+    # Doesn't require any param
+    # Image has to be 1D before adding to perceptrons
+    # Output is a 1D array of shape 375
+    model.add(Flatten())
