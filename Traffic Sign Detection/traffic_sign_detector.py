@@ -209,3 +209,8 @@ def leNet_model():
     # Adam Optimizer for compiling
     model.compile(optimizer=Adam(learning_rate=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
+
+model = leNet_model()
+print(model.summary())
+
+# %%
