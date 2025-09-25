@@ -1,5 +1,6 @@
 #%%
 # Headers
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -93,3 +94,36 @@ plt.xlabel("Class number")
 plt.ylabel("Number of images")
 
 #%%
+# Plotting a random original image first
+print("Unprocessed image")
+plt.imshow(X_train[1000])
+plt.axis("off")
+print(X_train[1000].shape)
+print(y_train[1000])
+
+# %%
+# Preprocessing the image
+# 1. Converting to greyscale
+def greyscale(img):
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return img
+
+img = greyscale(X_train[1000])
+plt.imshow(img)
+plt.axis("off")
+print(img.shape)
+
+# %%
+# 2. Histogram equalization
+# Standardizes lighting in all images
+# Ensure images have similar brighting value
+def hist_equalize(img):
+    # Function only extracts greyscale images
+    img = cv2.equalizeHist(img)
+    return img
+
+img = hist_equalize(img)
+plt.imshow(img)
+plt.axis("off")
+print(img.shape)
+# %%
