@@ -143,7 +143,8 @@ X_val = np.array(list(map(preprocessing, X_val)))
 
 # %%
 # Randomly plotting a processed image
-plt.imshow(X_train[random.randint(0, len(X_train)-1)])
+# cmap=plt.cm.binary used to force imshow to plot greyscale
+plt.imshow(X_train[random.randint(0, len(X_train)-1)], cmap=plt.cm.binary)
 plt.axis("off")
 print(X_train.shape)
 # %%
