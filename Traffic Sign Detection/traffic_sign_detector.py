@@ -147,4 +147,12 @@ X_val = np.array(list(map(preprocessing, X_val)))
 plt.imshow(X_train[random.randint(0, len(X_train)-1)], cmap=plt.cm.binary)
 plt.axis("off")
 print(X_train.shape)
+
+# %%
+# Making the image 1D
+X_train = X_train.reshape(34799, 32, 32, 1)
+X_test = X_test.reshape(12630, 32, 32, 1)
+X_val = X_val.reshape(4410, 32, 32, 1)
+
+print(X_train.shape)
 # %%
