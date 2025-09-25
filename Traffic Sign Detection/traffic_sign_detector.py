@@ -2,7 +2,7 @@
 # Headers
 import numpy as np
 import matplotlib.pyplot as plt
-import keras
+import random
 # For unpickling the data
 import pickle
 # Importing data analysis library
@@ -58,3 +58,27 @@ data = pd.read_csv(f'{path}/signnames.csv')
 print(data)
 
 # %%
+#Creating variables for plotting to visualize the data
+num_of_samples = []
+
+# To visualize random set of 5 images 
+cols = 5
+# 0-9 images
+num_of_classes = 43
+
+fig, axis = plt.subplots(nrows=num_of_classes, ncols=cols, figsize=(5, 50))
+fig.tight_layout()
+
+#fill the cells
+for i in range(cols):
+    # Iterate over the entire data
+    for j, row in data.iterrows():
+        x_selected = X_train[y_train==j]
+        # Access random image from jth category for the cell
+        # Ensuring grey scale
+        axis[j][i].imshow(x_selected[random.randint(0, len(x_selected)-1)],cmap=plt.get_cmap("grey"))
+        axis[j][i].axis("off")
+        if i == 2:
+            axis[j][i].set_title(str(j) + "-" + row['SignName'])
+            num_of_samples.append(len(x_selected))
+#%%
