@@ -173,4 +173,6 @@ def leNet_model():
     # padding - preserves spatial size of i/p
     # padding ensures o/p size same as i/p, to be used only if outer edges of image is imp
     model.add(Conv2D(30, (5, 5), input_shape = (32, 32, 1), activation='relu'))
-    
+    # Pooling layer
+    # size is scaled down by half
+    model.add(MaxPooling2D(pool_size=(2, 2)))
