@@ -160,4 +160,17 @@ print(X_train.shape)
 y_train = to_categorical(y_train, 43)
 y_test = to_categorical(y_test, 43)
 y_val = to_categorical(y_val, 43)
+
 # %%
+# Designing a Convoluitonal Neural Network
+def leNet_model():
+    model = Sequential()
+    # Convolutional Layer
+    # 30 filters is good
+    # 5,5 is filter matrix size
+    # 32, 32, 1 is filter shape (3d matrix)
+    # strides - translation of the kernel
+    # padding - preserves spatial size of i/p
+    # padding ensures o/p size same as i/p, to be used only if outer edges of image is imp
+    model.add(Conv2D(30, (5, 5), input_shape = (32, 32, 1), activation='relu'))
+    
