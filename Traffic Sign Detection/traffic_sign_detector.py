@@ -156,3 +156,8 @@ X_val = X_val.reshape(4410, 32, 32, 1)
 
 print(X_train.shape)
 # %%
+# One hot encoding the data
+y_train = to_categorical(y_train, 43)
+y_test = to_categorical(y_test, 43)
+y_val = to_categorical(y_val, 43)
+# %%
