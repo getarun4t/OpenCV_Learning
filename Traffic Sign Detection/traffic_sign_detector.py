@@ -140,4 +140,10 @@ def preprocessing(img):
 X_train = np.array(list(map(preprocessing, X_train)))
 X_test = np.array(list(map(preprocessing, X_test)))
 X_val = np.array(list(map(preprocessing, X_val)))
+
+# %%
+# Randomly plotting a processed image
+plt.imshow(X_train[random.randint(0, len(X_train)-1)])
+plt.axis("off")
+print(X_train.shape)
 # %%
