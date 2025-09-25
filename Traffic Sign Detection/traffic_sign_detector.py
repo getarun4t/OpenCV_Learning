@@ -214,3 +214,7 @@ model = leNet_model()
 print(model.summary())
 
 # %%
+# Training the model
+model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+
+# %%
