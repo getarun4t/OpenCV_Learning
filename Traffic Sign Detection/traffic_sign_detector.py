@@ -175,4 +175,11 @@ def leNet_model():
     model.add(Conv2D(30, (5, 5), input_shape = (32, 32, 1), activation='relu'))
     # Pooling layer
     # size is scaled down by half
+    # Pooling doesn't affect depth
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    # Second Conv layer
+    # Smaller filter because image is now smaller
+    # No input_shape as it is not the first layer
+    # Each image scaled down to 10,10,15
+    # Depth increases but image size reduces
+    model.add(Conv2D(15, (3,3), activation='relu'))
