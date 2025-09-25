@@ -16,6 +16,7 @@ from keras.optimizers import Adam
 from keras.utils import to_categorical
 from keras.layers import Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 
 
@@ -144,6 +145,28 @@ X_train = np.array(list(map(preprocessing, X_train)))
 X_test = np.array(list(map(preprocessing, X_test)))
 X_val = np.array(list(map(preprocessing, X_val)))
 
+#%%
+#Image augmentation techniques
+# Will run only when requested
+datagen = ImageDataGenerator(width_shift_range=0.1,
+                   height_shift_range=0.1,
+                   zoom_range=0.2,
+                   shear_range=0.1,
+                   rotation_range=10)
+datagen.fit(X_train)
+
+#%%
+# Creating an iterator for augmenting images
+batches = datagen.flow(X_train, y_train, batch_size=20)
+X_batch, y_batch = next(batches)
+# Plotting the images
+fig, axis = plt.subplots(1, 15, figsize=(20, 5))
+fig.tight_layout()
+
+for i in range (15):
+    axis[i].imshow(X_batch[i].reshape(32, 32))
+    axis[i].axis("off")
+
 # %%
 # Randomly plotting a processed image
 # cmap=plt.cm.binary used to force imshow to plot greyscale
@@ -264,24 +287,21 @@ print('Test Accuracy : ', score[1])
 
 # %%
 # Fetch test image
-url = 'https://c8.alamy.com/comp/G667W0/road-sign-speed-limit-30-kmh-zone-passau-bavaria-germany-G667W0.jpg'
+url = 'https://c8.alamy.com/comp/J2MRAJ/german-road-sign-bicycles-crossing-J2MRAJ.jpg'
 r = requests.get(url, stream=True)
 img = Image.open(r.raw)
 plt.imshow(img, cmap=plt.get_cmap('gray'))
-# %%
+
 #Preprocess image
 img = np.asarray(img)
 img = cv2.resize(img, (32, 32))
 img = preprocessing(img)
-plt.imshow(img, cmap = plt.get_cmap('gray'))
 print(img.shape)
  
-#%%
 #Reshape reshape
 img = img.reshape(1, 32, 32, 1)
 print(img.shape)
 
-#%% 
 #Test image
 pred = model.predict(img)
 pred_class = np.argmax(pred, axis=1)
