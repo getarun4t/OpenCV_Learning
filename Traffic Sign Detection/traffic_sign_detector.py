@@ -81,4 +81,15 @@ for i in range(cols):
         if i == 2:
             axis[j][i].set_title(str(j) + "-" + row['SignName'])
             num_of_samples.append(len(x_selected))
+
+# %%
+# Visualize class distribution 
+# Data set distribution is different among classes
+print(num_of_samples)
+plt.figure(figsize=(12, 4))
+plt.bar(range(0, num_of_classes), num_of_samples)
+plt.title("Distribution of the training dataset")
+plt.xlabel("Class number")
+plt.ylabel("Number of images")
+
 #%%
