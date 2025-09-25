@@ -215,6 +215,28 @@ print(model.summary())
 
 # %%
 # Training the model
-model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
 
+# %%
+# Plotting Loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['training', 'validation'])
+plt.title("Loss")
+plt.xlabel('epoch')
+
+#%%
+# Plotting Accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.legend(['training', 'validation'])
+plt.title("Accuracy")
+plt.xlabel('epoch')
+
+# %%
+# Evaluting model with test data
+score = model.evaluate(X_test, y_test, verbose=0)
+
+print('Test Score : ', score[0])
+print('Test Accuracy : ', score[1])
 # %%
