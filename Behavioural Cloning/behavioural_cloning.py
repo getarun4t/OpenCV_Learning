@@ -11,6 +11,7 @@ from keras.models import Sequential
 from keras.optimizers import Adam
 from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
 from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 
 # %%
 # Fetching the data
@@ -72,5 +73,34 @@ plt.bar(center, hist, width=0.05)
 # Plotting cut off for more than 200 samples
 plt.plot([np.min(data['steering']), np.max(data['steering'])], (samples_per_bin, samples_per_bin))
 
+# %%
+# Creating training and validation data
+def load_img_steering(datadir, df):
+    image_path = []
+    steering = []
+    for i in range(len(data)):
+        # iloc - allows to perform a selection on row of data based on index
+        indexed_data = data.iloc[i]
+        center, left, right = indexed_data[0], indexed_data[1], indexed_data[2]
+        # Appending the main path to the image name
+        image_path.append(os.path.join(datadir, center.strip()))
+        # Append the steering angles
+        steering.append(float(indexed_data[3]))
+    image_path = np.asarray(image_path)
+    steering = np.asarray(steering)
+    return image_path, steering
 
+image_paths, steerings = load_img_steering(datadir + '/IMG', data)
+
+
+# %%
+# Splitting the test and validation data
+X_train, X_val, y_train, y_val = train_test_split(image_paths, steerings, test_size=0.2, random_state=6)
+print(f'Training samples: {len(X_train)}\nValidation Samples: {len(X_val)}')
+# Ensuring that both is having data distribution uniform
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+axes[0].hist(y_train, bins=num_bins, width=0.05, color='b')
+axes[0].set_title('Training Set') 
+axes[1].hist(y_val, bins=num_bins, width=0.05, color='r')
+axes[1].set_title('Validation Set') 
 # %%
