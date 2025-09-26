@@ -34,7 +34,16 @@ data.head()
 # Plotting steering angle for visualization in histogram
 # For identifying the steering angle which is most common
 num_bins = 25
+# Most samples are around 0 angle
+# Hence adding a threashold of 200 to uniformize the data
+samples_per_bin = 300
 # Getting histogram and bins
 hist, bins = np.histogram(data['steering'], num_bins)
-print(bins)
+# Centering the value around 0
+center = (bins[:-1]+bins[1:]) * 0.5
+# Plotting the steering angle 
+plt.bar(center, hist, width=0.05)
+# Plotting cut off for more than 200 samples
+plt.plot([np.min(data['steering']), np.max(data['steering'])], (samples_per_bin, samples_per_bin))
+
 # %%
