@@ -158,20 +158,24 @@ def nvidia_model():
     # Convolutional layer
     # subsample = stride length of the image, can be increased for quicker computation
     # padding not added as edges are not imp
-    model.add(Conv2D(24, (5, 5), strides=(2, 2), activation='relu', input_shape=(66, 200, 3)))
+    # use of relu causes DEAD relu when value is less than zero
+    # negative input is always fed forward and will be always zero
+    # instead use elu instead of relu
+    # Elu has non-zero value in negative
+    model.add(Conv2D(24, (5, 5), strides=(2, 2), activation='elu', input_shape=(66, 200, 3)))
     # Convolutional layer 2
     # Should have 36 filters with kernal size 5, 5
-    model.add(Conv2D( 36, (5, 5), strides=(2,2), activation='relu'))    
+    model.add(Conv2D( 36, (5, 5), strides=(2,2), activation='elu'))    
     # Convolutional layer 3
     # Should have 36 filters with kernal size 5, 5
-    model.add(Conv2D( 48, (5, 5), strides=(2,2), activation='relu'))    
+    model.add(Conv2D( 48, (5, 5), strides=(2,2), activation='elu'))    
     # Convolutional layer 4
     # Should have 36 filters with kernal size 5, 5
     # subsampling is removed as image size is reduced drastically after first 3 layers
-    model.add(Conv2D( 64, (3, 3), activation='relu'))  
+    model.add(Conv2D( 64, (3, 3), activation='elu'))  
     # Convolutional layer 5
     # Should have 36 filters with kernal size 5, 5
-    model.add(Conv2D( 64, (3, 3), activation='relu'))
+    model.add(Conv2D( 64, (3, 3), activation='elu'))
 
     # Seperate Convulational Layer from Fully Connected Layer
     model.add(Dropout(0.5))
@@ -181,13 +185,13 @@ def nvidia_model():
     model.add(Flatten())
 
     # 3 Dense layers
-    model.add(Dense(100, activation='relu'))
+    model.add(Dense(100, activation='elu'))
     
     # Adding a dropout layer
     model.add(Dropout(0.5))
     
-    model.add(Dense(50, activation='relu'))
-    model.add(Dense(10, activation='relu'))
+    model.add(Dense(50, activation='elu'))
+    model.add(Dense(10, activation='elu'))
 
     # Dense layer with single output node
     model.add(Dense(1))
@@ -203,4 +207,18 @@ def nvidia_model():
 # Defining the model    
 model = nvidia_model()
 print(model.summary())
+
+# %%
+# Training the model
+# More epochs since data is less
+history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+
+#%%
+# Plotting the loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.legend(['Training', 'Validation'])
+plt.title('Loss')
+plt.xlabel('Epochs')
+
 # %%
