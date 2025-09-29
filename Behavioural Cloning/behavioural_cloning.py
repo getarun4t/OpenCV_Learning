@@ -171,7 +171,6 @@ def flip_image(image, steering_angle):
     steering_angle = -steering_angle
     return image, steering_angle
 
-
 random_index = random.randint(0, 1000)
 original_image = image_paths[random_index]
 steering = steerings[random_index]
@@ -184,6 +183,41 @@ axis[0].imshow(flipped_image)
 axis[0].set_title('Flipped image')
 axis[1].imshow(original_image)
 axis[1].set_title('Original image')
+
+# %%
+# Randomly augmenting some images
+# Else overfitting happens
+def random_augment(image, steering_angle):
+    image = mpimg.imread(image)
+    if np.random.rand() < 0.5:
+        image = pan(image) 
+    if np.random.rand() < 0.5:
+        image = zoom(image)
+    if np.random.rand() < 0.5:
+        image = img_random_brightness(image)
+    if np.random.rand() < 0.5:
+        image, steering_angle = flip_image(image, steering_angle)
+    return image, steering_angle
+
+# Plotting some images
+ncol = 2
+nrow = 10
+fig, axis = plt.subplots(nrow, ncol,  figsize=(15, 50))
+fig.tight_layout()
+
+for i in range(10):
+    randnum = random.randint(0, len(image_paths) -1)
+    random_image = image_paths[randnum]
+    random_steering_angle = steerings[randnum]
+
+    original_image = mpimg.imread(random_image)
+    augmented_image, augmented_steering = random_augment(random_image, random_steering_angle)
+
+    axis[i][0].imshow(augmented_image)
+    axis[i][0].set_title('Augmented image')
+    axis[i][1].imshow(original_image)
+    axis[i][1].set_title('Original image')
+
 
 # %%
 # Preprocessing data
