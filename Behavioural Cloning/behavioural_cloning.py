@@ -233,7 +233,7 @@ plt.xlabel('Epochs')
 
 # %%
 # Saving the model
-model.save('model.h5')
+model.save('model_tf.keras')  
 print(os.getcwd())
 
 # %%

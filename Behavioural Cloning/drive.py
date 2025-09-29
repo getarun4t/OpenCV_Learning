@@ -59,7 +59,7 @@ def connect(sid, environ):
 @sio.on('telemetry')
 def telemetry(sid, data):
     # Decoding the image
-    image = Image.open(BytesIO(base64.b64decode['image']))
+    image = Image.open(BytesIO(base64.b64decode(data['image'])))
     # Changing image as array
     image = np.asarray(image)
     # Preprocessing the image
@@ -70,7 +70,7 @@ def telemetry(sid, data):
     send_control(steering_angle, 1.0)
 
 if __name__ == '__main__':
-    model = '/'
+    model = load_model('model_tf.keras')
     # Setting flask app as middleware
     app = socketio.Middleware(sio, app)
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
