@@ -126,6 +126,25 @@ axis[0].set_title('Zoomed image')
 axis[1].imshow(original_image)
 axis[1].set_title('Original image')
 
+#%%
+# pan image augmentation
+def pan(image):
+    pan = iaa.Affine(translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)})
+    image = pan.augment_image(image)
+    return image
+
+image = image_paths[random.randint(0, 2001)]
+original_image = mpimg.imread(image)
+panned_image = pan(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(panned_image)
+axis[0].set_title('Panned image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+
 # %%
 # Preprocessing data
 def image_preprocess(img):
