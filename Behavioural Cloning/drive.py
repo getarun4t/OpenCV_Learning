@@ -12,17 +12,19 @@ from flask import Flask
 # Requires a middleware for trafficing data to it
 # Flask used for it
 sio = socketio.Server()
-
 # replaces main
 app = Flask(__name__)  
 
+# Function to send control back to simulator
 def send_control(steering_angle, throttle):
+    print('Simulator connected')
     sio.emit('steer', data={
-        'steering_angle' : steering_angle.__str__(),
-        'throttle' : throttle.__str__()
+        'steering_angle' : str(steering_angle),
+        'throttle' : str(throttle)
     })
 
-@sio.on('connect') #message, disconnect
+#Identifying the connection
+@sio.on('connect')
 def connect(sid, environ):
     print('Connected')
     send_control(0, 1)
