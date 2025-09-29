@@ -187,11 +187,21 @@ def nvidia_model():
     # 3 Dense layers
     model.add(Dense(100, activation='elu'))
     
-    # Adding a dropout layer
+    # Prevent Overfitting
+    # Adding a dropout layer 
     model.add(Dropout(0.5))
     
     model.add(Dense(50, activation='elu'))
+
+    # Prevent Overfitting
+    # Adding a dropout layer
+    model.add(Dropout(0.5))
+
     model.add(Dense(10, activation='elu'))
+
+    # Prevent Overfitting
+    # Adding a dropout layer
+    model.add(Dropout(0.5))
 
     # Dense layer with single output node
     model.add(Dense(1))
@@ -220,5 +230,10 @@ plt.plot(history.history['val_loss'])
 plt.legend(['Training', 'Validation'])
 plt.title('Loss')
 plt.xlabel('Epochs')
+
+# %%
+# Saving the model
+model.save('model.h5')
+print(os.getcwd())
 
 # %%
