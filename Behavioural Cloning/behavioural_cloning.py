@@ -133,7 +133,7 @@ def pan(image):
     image = pan.augment_image(image)
     return image
 
-image = image_paths[random.randint(0, 2001)]
+image = image_paths[random.randint(0, 1000)]
 original_image = mpimg.imread(image)
 panned_image = pan(original_image)
 # Plotting
@@ -151,7 +151,7 @@ def img_random_brightness(image):
     brightness = iaa.Multiply((0.2, 1.2))
     return brightness.augment_image(image)
 
-image = image_paths[random.randint(0, 3939)]
+image = image_paths[random.randint(0, 1000)]
 original_image = mpimg.imread(image)
 brightened_image = img_random_brightness(original_image)
 # Plotting
@@ -167,7 +167,23 @@ axis[1].set_title('Original image')
 def flip_image(image, steering_angle):
     # second arg is type of flip
     # 1 is horizontal flip
-    flip = cv2.flip(image, 1)
+    image = cv2.flip(image, 1)
+    steering_angle = -steering_angle
+    return image, steering_angle
+
+
+random_index = random.randint(0, 1000)
+original_image = image_paths[random_index]
+steering = steerings[random_index]
+original_image = mpimg.imread(image)
+flipped_image, flipped_angle = flip_image(original_image, steering)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(flipped_image)
+axis[0].set_title('Flipped image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
 
 # %%
 # Preprocessing data
