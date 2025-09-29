@@ -16,9 +16,16 @@ sio = socketio.Server()
 # replaces main
 app = Flask(__name__)  
 
+def send_control(steering_angle, throttle):
+    sio.emit('steer', data={
+        'steering_angle' : steering_angle.__str__(),
+        'throttle' : throttle.__str__()
+    })
+
 @sio.on('connect') #message, disconnect
 def connect(sid, environ):
     print('Connected')
+    send_control(0, 1)
 
 if __name__ == '__main__':
     # Setting flask app as middleware
