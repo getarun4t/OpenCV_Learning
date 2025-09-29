@@ -144,6 +144,30 @@ axis[0].set_title('Panned image')
 axis[1].imshow(original_image)
 axis[1].set_title('Original image')
 
+#%%
+# Brightness change augmentation
+def img_random_brightness(image):
+    # Model reacts better to a higher fraction of darker images
+    brightness = iaa.Multiply((0.2, 1.2))
+    return brightness.augment_image(image)
+
+image = image_paths[random.randint(0, 3939)]
+original_image = mpimg.imread(image)
+brightened_image = img_random_brightness(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(brightened_image)
+axis[0].set_title('Brightness altered image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+#%%
+# Flipping image augmentation
+def flip_image(image, steering_angle):
+    # second arg is type of flip
+    # 1 is horizontal flip
+    flip = cv2.flip(image, 1)
 
 # %%
 # Preprocessing data
