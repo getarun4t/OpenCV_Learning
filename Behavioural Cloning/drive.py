@@ -21,6 +21,8 @@ sio = socketio.Server()
 # replaces main
 app = Flask(__name__)  
 
+speed_limit = 10
+
 # Function to send control back to simulator
 def send_control(steering_angle, throttle):
     print('Simulator connected')
@@ -58,6 +60,7 @@ def connect(sid, environ):
 # Listen for updates send to telemetry from simulator
 @sio.on('telemetry')
 def telemetry(sid, data):
+    speed = float(data['speed'])
     # Decoding the image
     image = Image.open(BytesIO(base64.b64decode(data['image'])))
     # Changing image as array
@@ -67,7 +70,9 @@ def telemetry(sid, data):
     # changing to 4d array which is expected
     image = np.array([image])
     steering_angle = float(model.predict(image))
-    send_control(steering_angle, 1.0)
+    throttle = 1.0 - speed/speed_limit
+    print(f'Steering angle : {steering_angle}, \nThrottle: {throttle},\nSpeed: {speed}')
+    send_control(steering_angle, throttle)
 
 if __name__ == '__main__':
     model = load_model('model_tf.keras')
