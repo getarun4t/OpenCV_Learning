@@ -8,6 +8,9 @@ import pandas as pd
 import random
 import os
 
+#Image augmentor
+from imgaug import augmenters as iaa
+
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
@@ -103,6 +106,25 @@ axes[0].hist(y_train, bins=num_bins, width=0.05, color='b')
 axes[0].set_title('Training Set') 
 axes[1].hist(y_val, bins=num_bins, width=0.05, color='r')
 axes[1].set_title('Validation Set') 
+
+#%%
+# Zooming the image
+def zoom(image):
+    # 1, 1,3 is range of zoom
+    zoom=iaa.Affine(scale=(1, 1.3))
+    image = zoom.augment_image(image)
+    return image
+
+image = image_paths[random.randint(0, 1000)]
+original_image = mpimg.imread(image)
+zoomed_image = zoom(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(zoomed_image)
+axis[0].set_title('Zoomed image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
 
 # %%
 # Preprocessing data
