@@ -294,12 +294,13 @@ axes[1].set_title('Validation Image')
 
 #%%
 # Preprocessing all data
-X_train = np.array(list(map(image_preprocess, X_train)))
-X_val = np.array(list(map(image_preprocess, X_val)))
-# Checking a random image
-plt.imshow(X_train[random.randint(0, len(X_train-1))])
-plt.axis('off')
-print(X_train.shape)
+# NOT REQUIRED when image augmentastion is used
+# X_train = np.array(list(map(image_preprocess, X_train)))
+# X_val = np.array(list(map(image_preprocess, X_val)))
+# # Checking a random image
+# plt.imshow(X_train[random.randint(0, len(X_train-1))])
+# plt.axis('off')
+# print(X_train.shape)
 
 # %%
 # Defining the NVidia Model
@@ -332,7 +333,8 @@ def nvidia_model():
     model.add(Conv2D( 64, (3, 3), activation='elu'))
 
     # Seperate Convulational Layer from Fully Connected Layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
     
     # Flatter layer
     # Do maths to find the dimensions of output
@@ -343,26 +345,30 @@ def nvidia_model():
     
     # Prevent Overfitting
     # Adding a dropout layer 
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
     
     model.add(Dense(50, activation='elu'))
 
     # Prevent Overfitting
     # Adding a dropout layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
 
     model.add(Dense(10, activation='elu'))
 
     # Prevent Overfitting
     # Adding a dropout layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
 
     # Dense layer with single output node
     model.add(Dense(1))
 
     # Compiling the architecture
     # mean square error used for error metric
-    optimizer = Adam(learning_rate=1e-3)
+    # changing e-3 to e-4 for reducing loss
+    optimizer = Adam(learning_rate=1e-4)
     model.compile(loss = 'mse', optimizer=optimizer)
 
     return model
@@ -375,7 +381,20 @@ print(model.summary())
 # %%
 # Training the model
 # More epochs since data is less
-history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+#This improves training speed
+from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy("mixed_float16")
+
+
+history = model.fit(
+    batch_generator(X_train, y_train, 100, True),
+    steps_per_epoch=300,
+    epochs=10,
+    validation_data=batch_generator(X_val, y_val, 100, False),
+    validation_steps=200,
+    verbose=1,
+    shuffle=True,
+)
 
 #%%
 # Plotting the loss
