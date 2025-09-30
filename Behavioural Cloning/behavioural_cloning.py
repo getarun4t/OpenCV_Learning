@@ -8,6 +8,9 @@ import pandas as pd
 import random
 import os
 
+#Image augmentor
+from imgaug import augmenters as iaa
+
 from keras.models import Sequential
 from keras.optimizers import Adam
 from keras.layers import Conv2D, MaxPool2D, Dropout, Flatten, Dense
@@ -39,7 +42,7 @@ data.head()
 num_bins = 25
 # Most samples are around 0 angle
 # Hence adding a threashold of 200 to uniformize the data
-samples_per_bin = 350
+samples_per_bin = 600
 # Getting histogram and bins
 hist, bins = np.histogram(data['steering'], num_bins)
 # Centering the value around 0
@@ -104,11 +107,121 @@ axes[0].set_title('Training Set')
 axes[1].hist(y_val, bins=num_bins, width=0.05, color='r')
 axes[1].set_title('Validation Set') 
 
+#%%
+# Zooming the image
+def zoom(image):
+    # 1, 1,3 is range of zoom
+    zoom=iaa.Affine(scale=(1, 1.3))
+    image = zoom.augment_image(image)
+    return image
+
+image = image_paths[random.randint(0, 1000)]
+original_image = mpimg.imread(image)
+zoomed_image = zoom(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(zoomed_image)
+axis[0].set_title('Zoomed image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+#%%
+# pan image augmentation
+def pan(image):
+    pan = iaa.Affine(translate_percent={"x": (-0.1, 0.1), "y": (-0.1, 0.1)})
+    image = pan.augment_image(image)
+    return image
+
+image = image_paths[random.randint(0, 1000)]
+original_image = mpimg.imread(image)
+panned_image = pan(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(panned_image)
+axis[0].set_title('Panned image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+#%%
+# Brightness change augmentation
+def img_random_brightness(image):
+    # Model reacts better to a higher fraction of darker images
+    brightness = iaa.Multiply((0.2, 1.2))
+    return brightness.augment_image(image)
+
+image = image_paths[random.randint(0, 1000)]
+original_image = mpimg.imread(image)
+brightened_image = img_random_brightness(original_image)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(brightened_image)
+axis[0].set_title('Brightness altered image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+#%%
+# Flipping image augmentation
+def flip_image(image, steering_angle):
+    # second arg is type of flip
+    # 1 is horizontal flip
+    image = cv2.flip(image, 1)
+    steering_angle = -steering_angle
+    return image, steering_angle
+
+random_index = random.randint(0, 1000)
+original_image = image_paths[random_index]
+steering = steerings[random_index]
+original_image = mpimg.imread(image)
+flipped_image, flipped_angle = flip_image(original_image, steering)
+# Plotting
+fig, axis = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axis[0].imshow(flipped_image)
+axis[0].set_title('Flipped image')
+axis[1].imshow(original_image)
+axis[1].set_title('Original image')
+
+# %%
+# Randomly augmenting some images
+# Else overfitting happens
+def random_augment(image, steering_angle):
+    image = mpimg.imread(image)
+    if np.random.rand() < 0.5:
+        image = pan(image) 
+    if np.random.rand() < 0.5:
+        image = zoom(image)
+    if np.random.rand() < 0.5:
+        image = img_random_brightness(image)
+    if np.random.rand() < 0.5:
+        image, steering_angle = flip_image(image, steering_angle)
+    return image, steering_angle
+
+# Plotting some images
+ncol = 2
+nrow = 10
+fig, axis = plt.subplots(nrow, ncol,  figsize=(15, 50))
+fig.tight_layout()
+
+for i in range(10):
+    randnum = random.randint(0, len(image_paths) -1)
+    random_image = image_paths[randnum]
+    random_steering_angle = steerings[randnum]
+
+    original_image = mpimg.imread(random_image)
+    augmented_image, augmented_steering = random_augment(random_image, random_steering_angle)
+
+    axis[i][0].imshow(augmented_image)
+    axis[i][0].set_title('Augmented image')
+    axis[i][1].imshow(original_image)
+    axis[i][1].set_title('Original image')
+
+
 # %%
 # Preprocessing data
 def image_preprocess(img):
-    # Getting actual image from image path
-    img = mpimg.imread(img)
     # Cropping the top and bottom of image with unnecessary data
     # Decided based on viewing the data
     img = img[60:135, :, : ]
@@ -129,7 +242,7 @@ def image_preprocess(img):
 
 image = image_paths[100]
 original_image = mpimg.imread(image)
-preprocessed_image = image_preprocess(image)
+preprocessed_image = image_preprocess(original_image)
 
 #Plotting both images for comparison
 fig, axes = plt.subplots(1, 2, figsize=(15, 10))
@@ -139,13 +252,55 @@ axes[0].set_title('Original Image')
 axes[1].imshow(preprocessed_image)
 axes[1].set_title('PreProcessed Image')
 
+#%%
+# Defining batch generator
+# Prevents space wastage by generating small batches of augmented images when called
+# Training data can be augmented
+# But validation data shouldn't be
+# yield keyword saves all values inside - such funcs -> Co-routines
+# so when called again, values are not reinitialized, but takes old values
+def batch_generator(image_paths, steering_angle, batch_size, istraining):
+    while True:
+        batch_image= []
+        batch_steering = []
+
+        for i in range(batch_size):
+            random_index = random.randint(0, len(image_paths)-1)
+
+            if istraining:
+                image, steering = random_augment(image_paths[random_index], steering_angle[random_index])
+            else:
+                image = mpimg.imread(image_paths[random_index])
+                steering = steering_angle[random_index]
+            
+            # Image processing moved here for memory advantage
+            image = image_preprocess(image)
+            batch_image.append(image)
+            batch_steering.append(steering)
+        yield (np.asarray(batch_image), np.asarray(batch_steering))
+            
+#%%
+# Requesting data from batch generator
+X_train_gen, y_train_gen = next(batch_generator(X_train, y_train, 1, 1))
+X_val_gen, y_val_gen = next(batch_generator(X_val, y_val, 1, 0))
+
+#Plotting the images
+fig, axes = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axes[0].imshow(X_train_gen[0])
+axes[0].set_title('Training Image')
+axes[1].imshow(X_val_gen[0])
+axes[1].set_title('Validation Image')
+
+#%%
 # Preprocessing all data
-X_train = np.array(list(map(image_preprocess, X_train)))
-X_val = np.array(list(map(image_preprocess, X_val)))
-# Checking a random image
-plt.imshow(X_train[random.randint(0, len(X_train-1))])
-plt.axis('off')
-print(X_train.shape)
+# NOT REQUIRED when image augmentastion is used
+# X_train = np.array(list(map(image_preprocess, X_train)))
+# X_val = np.array(list(map(image_preprocess, X_val)))
+# # Checking a random image
+# plt.imshow(X_train[random.randint(0, len(X_train-1))])
+# plt.axis('off')
+# print(X_train.shape)
 
 # %%
 # Defining the NVidia Model
@@ -178,7 +333,8 @@ def nvidia_model():
     model.add(Conv2D( 64, (3, 3), activation='elu'))
 
     # Seperate Convulational Layer from Fully Connected Layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
     
     # Flatter layer
     # Do maths to find the dimensions of output
@@ -189,26 +345,30 @@ def nvidia_model():
     
     # Prevent Overfitting
     # Adding a dropout layer 
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
     
     model.add(Dense(50, activation='elu'))
 
     # Prevent Overfitting
     # Adding a dropout layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
 
     model.add(Dense(10, activation='elu'))
 
     # Prevent Overfitting
     # Adding a dropout layer
-    model.add(Dropout(0.5))
+    # Not required once Image augmentation is used
+    # model.add(Dropout(0.5))
 
     # Dense layer with single output node
     model.add(Dense(1))
 
     # Compiling the architecture
     # mean square error used for error metric
-    optimizer = Adam(learning_rate=1e-3)
+    # changing e-3 to e-4 for reducing loss
+    optimizer = Adam(learning_rate=1e-4)
     model.compile(loss = 'mse', optimizer=optimizer)
 
     return model
@@ -221,7 +381,20 @@ print(model.summary())
 # %%
 # Training the model
 # More epochs since data is less
-history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), batch_size=100, verbose=1, shuffle=1)
+#This improves training speed
+from tensorflow.keras import mixed_precision
+mixed_precision.set_global_policy("mixed_float16")
+
+
+history = model.fit(
+    batch_generator(X_train, y_train, 100, True),
+    steps_per_epoch=300,
+    epochs=10,
+    validation_data=batch_generator(X_val, y_val, 100, False),
+    validation_steps=200,
+    verbose=1,
+    shuffle=True,
+)
 
 #%%
 # Plotting the loss
@@ -233,7 +406,7 @@ plt.xlabel('Epochs')
 
 # %%
 # Saving the model
-model.save('model.h5')
+model.save('model_tf.keras')  
 print(os.getcwd())
 
 # %%
