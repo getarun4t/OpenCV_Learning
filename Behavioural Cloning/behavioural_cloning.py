@@ -222,8 +222,6 @@ for i in range(10):
 # %%
 # Preprocessing data
 def image_preprocess(img):
-    # Getting actual image from image path
-    img = mpimg.imread(img)
     # Cropping the top and bottom of image with unnecessary data
     # Decided based on viewing the data
     img = img[60:135, :, : ]
@@ -244,7 +242,7 @@ def image_preprocess(img):
 
 image = image_paths[100]
 original_image = mpimg.imread(image)
-preprocessed_image = image_preprocess(image)
+preprocessed_image = image_preprocess(original_image)
 
 #Plotting both images for comparison
 fig, axes = plt.subplots(1, 2, figsize=(15, 10))
@@ -254,6 +252,47 @@ axes[0].set_title('Original Image')
 axes[1].imshow(preprocessed_image)
 axes[1].set_title('PreProcessed Image')
 
+#%%
+# Defining batch generator
+# Prevents space wastage by generating small batches of augmented images when called
+# Training data can be augmented
+# But validation data shouldn't be
+# yield keyword saves all values inside - such funcs -> Co-routines
+# so when called again, values are not reinitialized, but takes old values
+def batch_generator(image_paths, steering_angle, batch_size, istraining):
+    while True:
+        batch_image= []
+        batch_steering = []
+
+        for i in range(batch_size):
+            random_index = random.randint(0, len(image_paths)-1)
+
+            if istraining:
+                image, steering = random_augment(image_paths[random_index], steering_angle[random_index])
+            else:
+                image = mpimg.imread(image_paths[random_index])
+                steering = steering_angle[random_index]
+            
+            # Image processing moved here for memory advantage
+            image = image_preprocess(image)
+            batch_image.append(image)
+            batch_steering.append(steering)
+        yield (np.asarray(batch_image), np.asarray(batch_steering))
+            
+#%%
+# Requesting data from batch generator
+X_train_gen, y_train_gen = next(batch_generator(X_train, y_train, 1, 1))
+X_val_gen, y_val_gen = next(batch_generator(X_val, y_val, 1, 0))
+
+#Plotting the images
+fig, axes = plt.subplots(1, 2, figsize=(15, 10))
+fig.tight_layout()
+axes[0].imshow(X_train_gen[0])
+axes[0].set_title('Training Image')
+axes[1].imshow(X_val_gen[0])
+axes[1].set_title('Validation Image')
+
+#%%
 # Preprocessing all data
 X_train = np.array(list(map(image_preprocess, X_train)))
 X_val = np.array(list(map(image_preprocess, X_val)))
