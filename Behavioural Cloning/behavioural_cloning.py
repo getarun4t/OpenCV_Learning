@@ -42,7 +42,7 @@ data.head()
 num_bins = 25
 # Most samples are around 0 angle
 # Hence adding a threashold of 200 to uniformize the data
-samples_per_bin = 350
+samples_per_bin = 600
 # Getting histogram and bins
 hist, bins = np.histogram(data['steering'], num_bins)
 # Centering the value around 0
