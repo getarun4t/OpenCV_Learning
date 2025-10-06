@@ -1,6 +1,7 @@
 # %%
 # Defining the headers
 import torch
+from torch.nn import Linear
 
 # %%
 # Defining variables 
@@ -25,4 +26,24 @@ def forward(x):
 x = torch.tensor(2)
 y_predicted = forward(x)
 print(y_predicted)
+
+# %%
+# Generating seeds for random values
+torch.manual_seed(1)
+
+# Creating a linear model
+model = Linear(in_features=1, out_features=1)
+# Print model parameters
+print(model.bias, model.weight)
+
+#%%
+# Testing the model
+x = torch.tensor([2.0])
+y = model(x)
+print(y)
+
+# Checking with multiple inputs
+x = torch.tensor([[2.0], [3.3]])
+y = model(x)
+print(y)
 # %%
