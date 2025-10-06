@@ -18,3 +18,8 @@ print(X)
 print(y)
 
 #%%
+#Plotting the data points and labels
+plt.scatter(X[y==0, 0], X[y==0, 1])
+plt.scatter(X[y==1, 0], X[y==1, 1])
+
+#%%
