@@ -36,6 +36,13 @@ class Model(nn.Module):
     def forward(self, X):
         pred = torch.sigmoid(self.linear(X))
         return pred
+    
+    def predict(self, X):
+        pred = self.forward(X)
+        if pred >0.5:
+            return 1
+        else:
+            return 0
 
 #%%
 # Testing the model with random seed
@@ -91,7 +98,19 @@ plt.xlabel('Loss')
 plt.ylabel('Epochs')
 
 #%%
-# Plotting the model
-plot_fit("Trained model")
+# Testing
+point1 = torch.Tensor([1.0, -1.0])
+point2 = torch.Tensor([-1.0, 1.0])
+plt.plot(point1.numpy()[0], point1.numpy()[1], 'ro')
+plt.plot(point2.numpy()[0], point2.numpy()[1], 'ko')
 
-#%%
+print(f"Red point in class: {model.predict(point1).item()}")
+print(f"Black point class: {model.predict(point2).item()}")
+
+print(f"Red point probability: {model.forward(point1).item()}")
+print(f"Black point probability: {model.forward(point2).item()}")
+
+plot_fit('Trained model test')
+
+
+# %%
