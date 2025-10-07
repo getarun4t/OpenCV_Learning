@@ -85,3 +85,13 @@ for i in range(epochs):
     optimizer.step()
 
 #%%
+# Plotting the losses
+plt.plot(range(epochs), losses)
+plt.xlabel('Loss')
+plt.ylabel('Epochs')
+
+#%%
+# Plotting the model
+plot_fit("Trained model")
+
+#%%
