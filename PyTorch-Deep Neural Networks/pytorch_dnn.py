@@ -85,19 +85,37 @@ plt.xlabel('Loss')
 plt.ylabel('Epochs')
 
 #%%
-# Testing
-point1 = torch.Tensor([1.0, -1.0])
-point2 = torch.Tensor([-1.0, 1.0])
-plt.plot(point1.numpy()[0], point1.numpy()[1], 'ro')
-plt.plot(point2.numpy()[0], point2.numpy()[1], 'ko')
+# Creating decision boundary
+def plot_decision_boundary():
+    # 0.25 tolerance 
+    x_span = np.linspace(min(X[:, 0]) -0.25 , max(X[:, 0]) + 0.25)
+    y_span = np.linspace(min(X[:, 1]) -0.25 , max(X[:, 1]) + 0.25)
+    # Returning a 2d matrix (50*50)
+    xx, yy = np.meshgrid(x_span, y_span)
+    # Changing to 1D array and concantenate columnwise
+    # np.c_ concantenize columnwise
+    # Tensor - converts to tensor
+    grid = torch.Tensor(np.c_[xx.ravel(), yy.ravel()])
+    # Feeding tensor to get predictions
+    pred_func = model.forward(grid)
+    # Reshaping pred to original data
+    z = pred_func.view(xx.shape).detach().numpy()
+    # Creating a contour plot
+    plt.contourf(xx, yy, z)
 
-print(f"Red point in class: {model.predict(point1).item()}")
-print(f"Black point class: {model.predict(point2).item()}")
 
-print(f"Red point probability: {model.forward(point1).item()}")
-print(f"Black point probability: {model.forward(point2).item()}")
+# %%
+# Plotting decision boundary
+plot_decision_boundary()
+scatter_plot()
 
-plot_fit('Trained model test')
-
-
+# %%
+# Testing value
+x = 0.025
+y = 0.025
+point = torch.Tensor([x,y])
+prediction = model.predict(point)
+plt.plot([x], [y], marker='o', markersize = 10, color = 'r')
+print("Prediction is", prediction)
+plot_decision_boundary()
 # %%
