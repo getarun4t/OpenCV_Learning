@@ -56,31 +56,13 @@ model = Model(2, 4, 1)
 print(list(model.parameters()))
 
 #%%
-# Obtain model parameters
-[w, b] = model.parameters()
-w1, w2 = w.view(2)
-b1 = b[0]
-
-def get_params():
-    return (w1.item(), w2.item(), b[0].item())
-
-#%%
-# Plotting the parameters
-def plot_fit(title):
-    plt.title = title
-    w1, w2, b1 = get_params()
-    x1 = np.array([-2.0, 2.0])
-    x2 = -(w1*x1 + b1) / w2
-    plt.plot(x1, x2, 'r')
-    scatter_plot()
-
-plot_fit("Model")
-
-#%%
 # Only 2 classes, hence binary cross entropy
 criterion = nn.BCELoss()
-# After computing error, taking gradient and its direction
-optimizer = torch.optim.SGD(model.parameters(), lr=0.02)
+# Using Adam optimizer
+# It is using combination of 2 diff stachastic algorithms 
+# lr is important for Adam
+# Very efficient for large datasets
+optimizer = torch.optim.Adam(model.parameters(), lr=0.02)
 # Epoch - no. of times model pass over data set
 epochs = 1000
 losses = []
