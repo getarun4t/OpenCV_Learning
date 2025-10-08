@@ -27,15 +27,18 @@ scatter_plot()
 
 #%%
 # Initializing the linear model
+# H1 - Hidden layer
 class Model(nn.Module):
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_size, H1, output_size):
         super().__init__()
         # Instance of class to be initialized
         self.linear = nn.Linear(input_size, output_size)
+        self.linear2 = nn.Linear(H1, output_size)
 
     def forward(self, X):
-        pred = torch.sigmoid(self.linear(X))
-        return pred
+        X = torch.sigmoid(self.linear(X))
+        X = torch.sigmoid(self.linear2(X))
+        return X
     
     def predict(self, X):
         pred = self.forward(X)
@@ -47,7 +50,9 @@ class Model(nn.Module):
 #%%
 # Testing the model with random seed
 torch.manual_seed(2)
-model = Model(2, 1)
+# Adding 4 hidden layers
+# too little underfitting, too many overfitting
+model = Model(2, 4, 1)
 print(list(model.parameters()))
 
 #%%
