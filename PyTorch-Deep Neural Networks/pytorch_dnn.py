@@ -32,7 +32,7 @@ class Model(nn.Module):
     def __init__(self, input_size, H1, output_size):
         super().__init__()
         # Instance of class to be initialized
-        self.linear = nn.Linear(input_size, output_size)
+        self.linear = nn.Linear(input_size, H1)
         self.linear2 = nn.Linear(H1, output_size)
 
     def forward(self, X):
@@ -62,7 +62,7 @@ criterion = nn.BCELoss()
 # It is using combination of 2 diff stachastic algorithms 
 # lr is important for Adam
 # Very efficient for large datasets
-optimizer = torch.optim.Adam(model.parameters(), lr=0.02)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
 # Epoch - no. of times model pass over data set
 epochs = 1000
 losses = []
