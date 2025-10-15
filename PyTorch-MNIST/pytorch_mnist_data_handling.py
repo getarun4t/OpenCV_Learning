@@ -97,11 +97,16 @@ for e in range(epochs):
         epoch_loss = running_loss/len(training_loader)
         epoch_acc = running_correct.float()/len(training_loader)
         running_loss_history.append(epoch_loss)
+        running_correct_history.append(epoch_acc)
         print(f'Training loss: {epoch_loss}')
         print(f'Accuracy: {epoch_acc}')
 
 #%%
-# Plotting 
+# Plotting loss
 plt.plot(running_loss_history, label='training loss')
 
 #%%
+# Plotting accuracy
+plt.plot(running_correct_history, label='Accuracy')
+
+# %%
