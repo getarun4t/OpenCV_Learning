@@ -3,7 +3,8 @@
 import torch
 import matplotlib.pyplot as plt
 import numpy as np
-
+import torch.nn.functional as F
+from torch import nn
 from torchvision import datasets, transforms
 
 #%%
@@ -39,5 +40,68 @@ for idx in np.arange(20):
     ax = fig.add_subplot(2, 10, idx+1)
     plt.imshow(im_convert(images[idx]))
     ax.set_title([labels[idx].item()])
+
+#%%
+# Creating a neural network class
+class Classifier(nn.Module):
+    def __init__(self, D_in, H1, H2, D_out):
+        super().__init__()
+        # Input layer
+        self.linear1 = nn.Linear(D_in, H1)
+        # First hidden layer
+        self.linear2 = nn.Linear(H1, H2)
+        # Second hidden layer
+        self.linear3 = nn.Linear(H2, D_out)
+    
+    def forward(self, x):
+        x = F.relu(self.linear1(x))
+        x = F.relu(self.linear2(x))
+        # No activation required in last layer
+        # Output returned is raw output
+        x = self.linear3(x)
+        return x
+
+# Setting hidden layer dimensions during init    
+model = Classifier(784,125, 65, 10)
+print(model)
+
+#%%
+# Getting the loss function
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
+
+#%%
+# Setting the number of epochs
+epochs = 12
+running_loss_history = []
+running_correct_history = []
+
+for e in range(epochs):
+    running_loss = 0.0
+    running_correct = 0.0
+
+    for images, labels in training_loader:
+        # Reshaping the training 
+        inputs = images.view(images.shape[0], -1)
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        _, preds = torch.max(outputs, 1)
+
+        running_loss+=loss.item()
+        running_correct+=torch.sum(preds == labels.data)
+    else:
+        epoch_loss = running_loss/len(training_loader)
+        epoch_acc = running_correct.float()/len(training_loader)
+        running_loss_history.append(epoch_loss)
+        print(f'Training loss: {epoch_loss}')
+        print(f'Accuracy: {epoch_acc}')
+
+#%%
+# Plotting 
+plt.plot(running_loss_history, label='training loss')
 
 #%%
