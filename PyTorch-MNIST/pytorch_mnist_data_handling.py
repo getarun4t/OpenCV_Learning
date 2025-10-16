@@ -14,9 +14,12 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
+# Creating training and validation dataset
 training_dataset = datasets.MNIST(root = './data', train = True, download= True, transform=transform)
+validation_dataset = datasets.MNIST(root = './data', train = False, download= True, transform=transform)
 # Cutting to smaller chunks
 training_loader = torch.utils.data.DataLoader(dataset=training_dataset, batch_size=100, shuffle=True)
+validation_loader = torch.utils.data.DataLoader(dataset=validation_dataset, batch_size=100, shuffle=False)
 
 #%%
 # Changing to numpy array
