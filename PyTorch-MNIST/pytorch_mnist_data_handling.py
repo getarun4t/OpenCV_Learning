@@ -78,10 +78,15 @@ optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
 epochs = 12
 running_loss_history = []
 running_correct_history = []
+validation_loss_history = []
+validation_correct_history = []
 
 for e in range(epochs):
     running_loss = 0.0
     running_correct = 0.0
+
+    validation_running_loss = 0.0
+    validation_running_correct = 0.0
 
     for images, labels in training_loader:
         # Reshaping the training 
@@ -97,19 +102,38 @@ for e in range(epochs):
         running_loss+=loss.item()
         running_correct+=torch.sum(preds == labels.data)
     else:
+        with torch.no_grad():
+            for val_inputs, val_labels in validation_loader:
+                val_inputs = val_inputs.view(val_inputs.shape[0], -1)
+                val_outputs = model(inputs)
+                val_loss = criterion(outputs, val_labels)
+
+                _, val_preds = torch.max(val_outputs, 1)
+
+                validation_running_loss+=val_loss.item()
+                validation_running_correct+=torch.sum(val_preds == val_labels.data)
         epoch_loss = running_loss/len(training_loader)
         epoch_acc = running_correct.float()/len(training_loader)
         running_loss_history.append(epoch_loss)
         running_correct_history.append(epoch_acc)
-        print(f'Training loss: {epoch_loss}')
-        print(f'Accuracy: {epoch_acc}')
+        
+        val_epoch_loss = validation_running_loss/len(validation_loader)
+        val_epoch_acc = validation_running_correct.float()/len(validation_loader)
+        validation_loss_history.append(val_epoch_loss)
+        validation_correct_history.append(val_epoch_acc)
+
+        print(f'epoch: {e+1}')
+        print(f'Training loss : {epoch_loss}, Training Accuracy: {epoch_acc.item()}')
+        print (f'Validation loss: {val_epoch_loss}, Validation Accuracy: {val_epoch_acc.item()}')
 
 #%%
 # Plotting loss
 plt.plot(running_loss_history, label='training loss')
+plt.plot(validation_loss_history, label='Validation loss')
 
 #%%
 # Plotting accuracy
 plt.plot(running_correct_history, label='Accuracy')
+plt.plot(validation_correct_history, label='Validation Accuracy')
 
 # %%
