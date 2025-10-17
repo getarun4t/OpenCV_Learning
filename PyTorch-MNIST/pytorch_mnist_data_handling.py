@@ -5,6 +5,7 @@ import requests
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.nn.functional as F
+import PIL
 from torch import nn
 from torchvision import datasets, transforms
 from PIL import Image
@@ -139,8 +140,31 @@ plt.plot(running_correct_history, label='Accuracy')
 plt.plot(validation_correct_history, label='Validation Accuracy')
 
 # %%
+# Getting test image from web
 url = 'https://images.homedepot-static.com/productImages/007164ea-d47e-4f66-8d8c-fd9f621984a2/svn/architectural-mailboxes-house-letters-numbers-3585b-5-64_1000.jpg'
 response = requests.get(url, stream=True)
 img = Image.open(response.raw)
 plt.imshow(img)
+
 #%%
+# Preprocessing the image to model input format 
+# Change image to black background and white digit
+img = PIL.ImageOps.invert(img)
+# Converting the image to single channel
+img = img.convert('L')
+# Transforming to 28*28
+img = img.resize((28, 28)) 
+
+# Transform through same MNIST preprocessing 
+img = transform(img)
+plt.imshow(im_convert(img))
+
+#%%
+# Adding to the model, flattening and predicting
+img = img.view(img.shape[0], -1)
+output = model(img)
+_, pred = torch.max(output, 1)
+print(pred.item())
+
+# %%
+# Validation iter
