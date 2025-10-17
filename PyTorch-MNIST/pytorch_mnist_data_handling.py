@@ -1,11 +1,13 @@
 #%%
 # Headers
 import torch
+import requests
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.nn.functional as F
 from torch import nn
 from torchvision import datasets, transforms
+from PIL import Image
 
 #%%
 # Getting MNIST data set
@@ -137,3 +139,8 @@ plt.plot(running_correct_history, label='Accuracy')
 plt.plot(validation_correct_history, label='Validation Accuracy')
 
 # %%
+url = 'https://images.homedepot-static.com/productImages/007164ea-d47e-4f66-8d8c-fd9f621984a2/svn/architectural-mailboxes-house-letters-numbers-3585b-5-64_1000.jpg'
+response = requests.get(url, stream=True)
+img = Image.open(response.raw)
+plt.imshow(img)
+#%%
