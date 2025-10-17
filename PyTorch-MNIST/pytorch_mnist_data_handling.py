@@ -168,3 +168,24 @@ print(pred.item())
 
 # %%
 # Validation iter
+# Creating an iterable
+data_iter = iter(validation_loader)
+images, labels = next(data_iter)
+
+# ✅ Keep original for display
+images_display = images.clone()
+
+# ✅ Flatten ONLY for prediction
+inputs = images.view(images.shape[0], -1)
+output = model(inputs)
+_, preds = torch.max(output, 1)
+
+fig = plt.figure(figsize=(25, 4))
+
+for idx in np.arange(20):
+    ax = fig.add_subplot(2, 10, idx+1)
+    plt.imshow(im_convert(images_display[idx]))
+    correct = preds[idx] == labels[idx]
+    ax.set_title(f"{preds[idx].item()} ({labels[idx].item()})", color="green" if correct else "red")
+    ax.axis("off")
+# %%
