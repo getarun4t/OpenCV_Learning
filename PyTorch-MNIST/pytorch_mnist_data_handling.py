@@ -105,8 +105,8 @@ for e in range(epochs):
         with torch.no_grad():
             for val_inputs, val_labels in validation_loader:
                 val_inputs = val_inputs.view(val_inputs.shape[0], -1)
-                val_outputs = model(inputs)
-                val_loss = criterion(outputs, val_labels)
+                val_outputs = model(val_inputs)
+                val_loss = criterion(val_outputs, val_labels)
 
                 _, val_preds = torch.max(val_outputs, 1)
 
