@@ -60,16 +60,25 @@ class LeNet(nn.Module):
         self.conv1 = nn.Conv2d(20, 50, 5, 1)
         # Fully connected layers
         # Padding can be added to prevent size reduction (not used now)
+        # 50 channels input with 4*4
         self.fc1 = nn.Linear(4*4*50, 500)
         # Second fc layer
+        # Output is 10 as MNIST has 10 classes to be classified
         self.fc1 = nn.Linear(500, 10)
     
     def forward(self, x):
-        x = F.relu(self.linear1(x))
-        x = F.relu(self.linear2(x))
-        # No activation required in last layer
-        # Output returned is raw output
-        x = self.linear3(x)
+        # First pooling layer
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2)
+        # Second pooling layer
+        x = F.relu(self.conv2(x))
+        # Pooling layer cuts image size by 2
+        x = F.max_pool2d(x, 2, 2)
+        # After final pooling layer, image has to be flattened before going to fully connected layer
+        x = x.view(-1, 4*4*50)
+        # Attaching relu activation function to fully connected layer
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
         return x
 
 # Setting hidden layer dimensions during init    
