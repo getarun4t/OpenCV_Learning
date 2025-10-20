@@ -11,6 +11,16 @@ from torchvision import datasets, transforms
 from PIL import Image
 
 #%%
+# Adding Cuda
+print("CUDA available:", torch.cuda.is_available())
+print("PyTorch CUDA version:", torch.version.cuda)
+print("Device count:", torch.cuda.device_count())
+if torch.cuda.is_available():
+    print("GPU Name:", torch.cuda.get_device_name(0))
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print("Using device:", device)
+
+#%%
 # Getting MNIST data set
 # Converting to tensor using transform
 transform = transforms.Compose([
@@ -62,6 +72,9 @@ class LeNet(nn.Module):
         # Padding can be added to prevent size reduction (not used now)
         # 50 channels input with 4*4
         self.fc1 = nn.Linear(4*4*50, 500)
+        # Adding a dropout layer
+        # rate = 0.5 as suggested by researchers
+        self.dropout1 = nn.Dropout(0.5)
         # Second fc layer
         # Output is 10 as MNIST has 10 classes to be classified
         self.fc2 = nn.Linear(500, 10)
@@ -78,11 +91,13 @@ class LeNet(nn.Module):
         x = x.view(-1, 4*4*50)
         # Attaching relu activation function to fully connected layer
         x = F.relu(self.fc1(x))
+        # Adding dropout layer
+        x = self.dropout1(x)
         x = self.fc2(x)
         return x
 
 # Setting hidden layer dimensions during init    
-model = LeNet()
+model = LeNet().to(device)
 print(model)
 
 #%%
@@ -106,9 +121,11 @@ for e in range(epochs):
     validation_running_correct = 0.0
 
     for images, labels in training_loader:
-        # Reshaping the training 
-        inputs = images.view(images.shape[0], -1)
-        outputs = model(inputs)
+        # Using GPU
+        images = images.to(device)
+        labels = labels.to(device)
+
+        outputs = model(images)
         loss = criterion(outputs, labels)
         optimizer.zero_grad()
         loss.backward()
@@ -121,7 +138,8 @@ for e in range(epochs):
     else:
         with torch.no_grad():
             for val_inputs, val_labels in validation_loader:
-                val_inputs = val_inputs.view(val_inputs.shape[0], -1)
+                val_inputs = val_inputs.to(device)
+                val_labels = val_labels.to(device)
                 val_outputs = model(val_inputs)
                 val_loss = criterion(val_outputs, val_labels)
 
@@ -142,6 +160,11 @@ for e in range(epochs):
         print(f'epoch: {e+1}')
         print(f'Training loss : {epoch_loss}, Training Accuracy: {epoch_acc.item()}')
         print (f'Validation loss: {val_epoch_loss}, Validation Accuracy: {val_epoch_acc.item()}')
+
+#%%
+# Converting to CPU data for plotting
+running_correct_history = [x.cpu().item() for x in running_correct_history]
+validation_correct_history = [x.cpu().item() for x in validation_correct_history]
 
 #%%
 # Plotting loss
@@ -175,8 +198,13 @@ plt.imshow(im_convert(img))
 
 #%%
 # Adding to the model, flattening and predicting
-img = img.view(img.shape[0], -1)
-output = model(img)
+img = img.to(device)
+
+if len(img.shape) == 3:  # if missing batch dimension, add one
+    img = img.unsqueeze(0)
+
+# DO NOT FLATTEN BEFORE PASSING TO CNN
+output = model(img)  
 _, pred = torch.max(output, 1)
 print(pred.item())
 
@@ -186,20 +214,24 @@ print(pred.item())
 data_iter = iter(validation_loader)
 images, labels = next(data_iter)
 
-# ✅ Keep original for display
-images_display = images.clone()
+# Using GPU
+images = images.to(device)
+labels = labels.to(device)
 
-# ✅ Flatten ONLY for prediction
-inputs = images.view(images.shape[0], -1)
-output = model(inputs)
+# ✅ Make sure shape is correct: [B, C, H, W]
+# For MNIST-like data, it should already be like this: [batch, 1, 28, 28]
+print(images.shape)  # Expected: torch.Size([100, 1, 28, 28])
+
+# ✅ Run forward pass without flattening
+output = model(images)
+
 _, preds = torch.max(output, 1)
 
+# Plot
 fig = plt.figure(figsize=(25, 4))
-
 for idx in np.arange(20):
     ax = fig.add_subplot(2, 10, idx+1)
-    plt.imshow(im_convert(images_display[idx]))
-    correct = preds[idx] == labels[idx]
-    ax.set_title(f"{preds[idx].item()} ({labels[idx].item()})", color="green" if correct else "red")
-    ax.axis("off")
+    plt.imshow(im_convert(images[idx].cpu()))
+    ax.set_title(f"{preds[idx].item()} ({labels[idx].item()})",
+                 color="green" if preds[idx] == labels[idx] else "red")
 # %%
