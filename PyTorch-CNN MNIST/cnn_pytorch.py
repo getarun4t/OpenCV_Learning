@@ -48,16 +48,21 @@ for idx in np.arange(20):
     ax.set_title([labels[idx].item()])
 
 #%%
-# Creating a neural network class
-class Classifier(nn.Module):
+# Using LeNet Model
+class LeNet(nn.Module):
     def __init__(self, D_in, H1, H2, D_out):
         super().__init__()
-        # Input layer
-        self.linear1 = nn.Linear(D_in, H1)
-        # First hidden layer
-        self.linear2 = nn.Linear(H1, H2)
-        # Second hidden layer
-        self.linear3 = nn.Linear(H2, D_out)
+        # First convolutional layer (Input layer)
+        # 1 input layer as greyscale, 20 output layer, kernel scale 5, strive length 1 as input is small  
+        self.conv1 = nn.Conv2d(1, 20, 5, 1)
+        # Second layer
+        # 50 output layer as output
+        self.conv1 = nn.Conv2d(20, 50, 5, 1)
+        # Fully connected layers
+        # Padding can be added to prevent size reduction (not used now)
+        self.fc1 = nn.Linear(4*4*50, 500)
+        # Second fc layer
+        self.fc1 = nn.Linear(500, 10)
     
     def forward(self, x):
         x = F.relu(self.linear1(x))
