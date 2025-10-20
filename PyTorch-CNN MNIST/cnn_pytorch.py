@@ -50,21 +50,21 @@ for idx in np.arange(20):
 #%%
 # Using LeNet Model
 class LeNet(nn.Module):
-    def __init__(self, D_in, H1, H2, D_out):
+    def __init__(self):
         super().__init__()
         # First convolutional layer (Input layer)
         # 1 input layer as greyscale, 20 output layer, kernel scale 5, strive length 1 as input is small  
         self.conv1 = nn.Conv2d(1, 20, 5, 1)
         # Second layer
         # 50 output layer as output
-        self.conv1 = nn.Conv2d(20, 50, 5, 1)
+        self.conv2 = nn.Conv2d(20, 50, 5, 1)
         # Fully connected layers
         # Padding can be added to prevent size reduction (not used now)
         # 50 channels input with 4*4
         self.fc1 = nn.Linear(4*4*50, 500)
         # Second fc layer
         # Output is 10 as MNIST has 10 classes to be classified
-        self.fc1 = nn.Linear(500, 10)
+        self.fc2 = nn.Linear(500, 10)
     
     def forward(self, x):
         # First pooling layer
@@ -82,7 +82,7 @@ class LeNet(nn.Module):
         return x
 
 # Setting hidden layer dimensions during init    
-model = Classifier(784,125, 65, 10)
+model = LeNet()
 print(model)
 
 #%%
