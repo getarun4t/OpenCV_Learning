@@ -21,6 +21,18 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
 
 #%%
+# Data augmentation
+# Getting MNIST data set
+# Converting to tensor using transform
+transform_train = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(10),
+    transforms.RandomAffine(0, shear=10, scale=(0.8, 1.2)),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+    transforms.Normalize((0.5,), (0.5,))
+])
+
 # Getting MNIST data set
 # Converting to tensor using transform
 transform = transforms.Compose([
@@ -28,7 +40,7 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 # Creating training and validation dataset
-training_dataset = datasets.CIFAR10(root = './data', train = True, download= True, transform=transform)
+training_dataset = datasets.CIFAR10(root = './data', train = True, download= True, transform=transform_train)
 validation_dataset = datasets.CIFAR10(root = './data', train = False, download= True, transform=transform)
 # Cutting to smaller chunks
 training_loader = torch.utils.data.DataLoader(dataset=training_dataset, batch_size=100, shuffle=True)
