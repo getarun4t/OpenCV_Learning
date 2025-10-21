@@ -181,19 +181,16 @@ plt.plot(validation_correct_history, label='Validation Accuracy')
 
 # %%
 # Getting test image from web
-url = 'https://images.homedepot-static.com/productImages/007164ea-d47e-4f66-8d8c-fd9f621984a2/svn/architectural-mailboxes-house-letters-numbers-3585b-5-64_1000.jpg'
+url = 'https://www.pbs.org/wnet/nature/files/2021/05/frog-610x343.jpg'
 response = requests.get(url, stream=True)
-img = Image.open(response.raw)
+img = Image.open(response.raw).convert('RGB')
 plt.imshow(img)
 
 #%%
 # Preprocessing the image to model input format 
 # Change image to black background and white digit
-img = PIL.ImageOps.invert(img)
-# Converting the image to single channel
-img = img.convert('L')
-# Transforming to 28*28
-img = img.resize((28, 28)) 
+# Transforming to 32*32
+img = img.resize((32, 32)) 
 
 # Transform through same MNIST preprocessing 
 img = transform(img)
@@ -209,7 +206,7 @@ if len(img.shape) == 3:  # if missing batch dimension, add one
 # DO NOT FLATTEN BEFORE PASSING TO CNN
 output = model(img)  
 _, pred = torch.max(output, 1)
-print(pred.item())
+print(classes[pred.item()])
 
 # %%
 # Validation iter
@@ -235,6 +232,6 @@ fig = plt.figure(figsize=(25, 4))
 for idx in np.arange(20):
     ax = fig.add_subplot(2, 10, idx+1)
     plt.imshow(im_convert(images[idx].cpu()))
-    ax.set_title(f"{preds[idx].item()} ({labels[idx].item()})",
+    ax.set_title(f"{str(classes[preds[idx].item()])} ({str(classes[labels[idx].item()])})",
                  color="green" if preds[idx] == labels[idx] else "red")
 # %%
