@@ -47,6 +47,10 @@ def im_convert(tensor):
     return image
 
 #%%
+classes = ('plain', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+
+#%%
 # Creating an iterable
 data_iter = iter(training_loader)
 images, labels = next(data_iter)
