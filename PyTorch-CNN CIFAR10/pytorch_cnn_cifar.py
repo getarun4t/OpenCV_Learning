@@ -49,7 +49,6 @@ def im_convert(tensor):
 #%%
 classes = ('plain', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-
 #%%
 # Creating an iterable
 data_iter = iter(training_loader)
@@ -59,7 +58,7 @@ fig = plt.figure(figsize=(25, 4))
 for idx in np.arange(20):
     ax = fig.add_subplot(2, 10, idx+1)
     plt.imshow(im_convert(images[idx]))
-    ax.set_title([labels[idx].item()])
+    ax.set_title(classes[labels[idx].item()])
 
 #%%
 # Using LeNet Model
@@ -67,15 +66,15 @@ class LeNet(nn.Module):
     def __init__(self):
         super().__init__()
         # First convolutional layer (Input layer)
-        # 1 input layer as greyscale, 20 output layer, kernel scale 5, strive length 1 as input is small  
-        self.conv1 = nn.Conv2d(1, 20, 5, 1)
+        # 3 input layer (RGB) as greyscale, 20 output layer, kernel scale 5, strive length 1 as input is small  
+        self.conv1 = nn.Conv2d(3, 20, 5, 1)
         # Second layer
         # 50 output layer as output
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
         # Fully connected layers
         # Padding can be added to prevent size reduction (not used now)
         # 50 channels input with 4*4
-        self.fc1 = nn.Linear(4*4*50, 500)
+        self.fc1 = nn.Linear(5*5*50, 500)
         # Adding a dropout layer
         # rate = 0.5 as suggested by researchers
         self.dropout1 = nn.Dropout(0.5)
@@ -92,7 +91,7 @@ class LeNet(nn.Module):
         # Pooling layer cuts image size by 2
         x = F.max_pool2d(x, 2, 2)
         # After final pooling layer, image has to be flattened before going to fully connected layer
-        x = x.view(-1, 4*4*50)
+        x = x.view(-1, 5*5*50)
         # Attaching relu activation function to fully connected layer
         x = F.relu(self.fc1(x))
         # Adding dropout layer
