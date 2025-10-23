@@ -40,8 +40,10 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 # Creating training and validation dataset
-training_dataset = datasets.CIFAR10(root = './data', train = True, download= True, transform=transform_train)
-validation_dataset = datasets.CIFAR10(root = './data', train = False, download= True, transform=transform)
+training_dataset = datasets.ImageFolder(root = '../../ants-bees-dataset/train',  transform=transform_train)
+validation_dataset = datasets.ImageFolder(root = '../../ants-bees-dataset/val',  transform=transform)
+print(len(training_dataset))
+print(len(validation_dataset))
 # Cutting to smaller chunks
 training_loader = torch.utils.data.DataLoader(dataset=training_dataset, batch_size=100, shuffle=True)
 validation_loader = torch.utils.data.DataLoader(dataset=validation_dataset, batch_size=100, shuffle=False)
