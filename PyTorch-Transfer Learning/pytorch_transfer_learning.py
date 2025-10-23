@@ -29,7 +29,6 @@ transform_train = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
     transforms.RandomAffine(0, shear=10, scale=(0.8, 1.2)),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
     transforms.Normalize((0.5,), (0.5,))
@@ -112,7 +111,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr = 0.0001)
 
 #%%
 # Setting the number of epochs
-epochs = 12
+epochs = 10
 running_loss_history = []
 running_correct_history = []
 validation_loss_history = []
