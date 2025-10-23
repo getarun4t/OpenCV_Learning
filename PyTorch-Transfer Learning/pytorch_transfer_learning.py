@@ -84,10 +84,31 @@ model = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
 print(model)
 
 #%%
+# Adjusting model
+for param in model.features.parameters():
+    # When gradients are not used 
+    param.requires_grad = False
+
+#%%
+# Update layer layer in the model to output 2 classes only
+# Selecting inputs to 6th layer in model and modifying
+n_inputs = model.classifier[6].in_features
+# Creating a new last year with 2 classes as output
+# This will be the final layer
+last_year = nn.Linear(n_inputs, len(classes))
+# Replacing last layer with anove
+model.classifier[6] = last_year
+print(model)
+
+#%%
+# Moving model to GPU
+model.to(device)
+
+#%%
 # Getting the loss function
 criterion = nn.CrossEntropyLoss()
 # Increasing training rate 
-optimizer = torch.optim.Adam(model.parameters(), lr = 0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr = 0.0001)
 
 #%%
 # Setting the number of epochs
