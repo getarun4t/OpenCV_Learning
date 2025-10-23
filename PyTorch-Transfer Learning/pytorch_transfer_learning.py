@@ -28,6 +28,7 @@ print("Using device:", device)
 transform_train = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
+    transforms.RandomRotation(20),
     transforms.RandomHorizontalFlip(),
     transforms.RandomAffine(0, shear=10, scale=(0.8, 1.2)),
     transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
@@ -184,7 +185,7 @@ plt.legend()
 
 # %%
 # Getting test image from web
-url = 'https://www.pbs.org/wnet/nature/files/2021/05/frog-610x343.jpg'
+url = 'https://e3.365dm.com/23/09/2048x1152/skynews-red-fire-ant-generic_6282149.jpg'
 response = requests.get(url, stream=True)
 img = Image.open(response.raw).convert('RGB')
 plt.imshow(img)
