@@ -7,7 +7,7 @@ import numpy as np
 import torch.nn.functional as F
 import PIL
 from torch import nn
-from torchvision import datasets, transforms
+from torchvision import datasets, transforms, models
 from PIL import Image
 
 #%%
