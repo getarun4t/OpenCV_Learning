@@ -9,7 +9,7 @@ import PIL
 from torch import nn
 from torchvision import datasets, transforms, models
 from PIL import Image
-from torchvision.models import AlexNet_Weights
+from torchvision.models import AlexNet_Weights, VGG16_Weights
 
 #%%
 # Adding Cuda
@@ -80,7 +80,7 @@ for idx in np.arange(20):
 
 #%%
 # Loading AlexNet Model
-model = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
+model = models.vgg16(weights=VGG16_Weights.IMAGENET1K_V1)
 print(model)
 
 #%%
@@ -111,8 +111,8 @@ criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr = 0.0001)
 
 #%%
-# Setting the number of epochs
-epochs = 10
+# Training 
+epochs = 5
 running_loss_history = []
 running_correct_history = []
 validation_loss_history = []
