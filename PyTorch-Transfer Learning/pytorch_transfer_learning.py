@@ -39,6 +39,7 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
+# Dataset - https://github.com/jaddoescad/ants-bees-dataset
 # Creating training and validation dataset
 training_dataset = datasets.ImageFolder(root = '../../ants-bees-dataset/train',  transform=transform_train)
 validation_dataset = datasets.ImageFolder(root = '../../ants-bees-dataset/val',  transform=transform)
@@ -61,7 +62,7 @@ def im_convert(tensor):
     return image
 
 #%%
-classes = ('plain', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+classes = ('ants', 'bees')
 
 #%%
 # Creating an iterable
@@ -173,13 +174,13 @@ for e in range(epochs):
 
                 validation_running_loss+=val_loss.item()
                 validation_running_correct+=torch.sum(val_preds == val_labels.data)
-        epoch_loss = running_loss/len(training_loader)
-        epoch_acc = running_correct.float()/len(training_loader)
+        epoch_loss = running_loss/len(training_loader.dataset)
+        epoch_acc = running_correct.float()/len(training_loader.dataset)
         running_loss_history.append(epoch_loss)
         running_correct_history.append(epoch_acc)
         
-        val_epoch_loss = validation_running_loss/len(validation_loader)
-        val_epoch_acc = validation_running_correct.float()/len(validation_loader)
+        val_epoch_loss = validation_running_loss/len(validation_loader.dataset)
+        val_epoch_acc = validation_running_correct.float()/len(validation_loader.dataset)
         validation_loss_history.append(val_epoch_loss)
         validation_correct_history.append(val_epoch_acc)
 
