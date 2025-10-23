@@ -9,6 +9,7 @@ import PIL
 from torch import nn
 from torchvision import datasets, transforms, models
 from PIL import Image
+from torchvision.models import AlexNet_Weights
 
 #%%
 # Adding Cuda
@@ -25,6 +26,7 @@ print("Using device:", device)
 # Getting MNIST data set
 # Converting to tensor using transform
 transform_train = transforms.Compose([
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.RandomHorizontalFlip(),
     transforms.RandomRotation(10),
@@ -36,6 +38,7 @@ transform_train = transforms.Compose([
 # Getting MNIST data set
 # Converting to tensor using transform
 transform = transforms.Compose([
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
@@ -76,54 +79,8 @@ for idx in np.arange(20):
     ax.set_title(classes[labels[idx].item()])
 
 #%%
-# Using LeNet Model
-class LeNet(nn.Module):
-    def __init__(self):
-        super().__init__()
-        # First convolutional layer (Input layer)
-        # 3 input layer (RGB) as greyscale, 20 output layer, kernel scale 5, strive length 1 as input is small  
-        # Reduce kernel size
-        # Add padding
-        self.conv1 = nn.Conv2d(3, 16, 3, 1, padding=1)
-        # Second layer
-        # 50 output layer as output
-        self.conv2 = nn.Conv2d(16, 32, 3, 1, padding=1)
-        # Adding a third layer for more extraction
-        self.conv3 = nn.Conv2d(32, 64, 3, 1, padding=1)
-        # Fully connected layers
-        # Padding can be added to prevent size reduction (not used now)
-        # 50 channels input with 4*4
-        self.fc1 = nn.Linear(4*4*64, 500)
-        # Adding a dropout layer
-        # rate = 0.5 as suggested by researchers
-        self.dropout1 = nn.Dropout(0.5)
-        # Second fc layer
-        # Output is 10 as MNIST has 10 classes to be classified
-        self.fc2 = nn.Linear(500, 10)
-    
-    def forward(self, x):
-        # First pooling layer
-        x = F.relu(self.conv1(x))
-        x = F.max_pool2d(x, 2, 2)
-        # Second pooling layer
-        x = F.relu(self.conv2(x))
-        # Pooling layer cuts image size by 2
-        x = F.max_pool2d(x, 2, 2)
-        # Third pooling layer
-        x = F.relu(self.conv3(x))
-        # Pooling layer cuts image size by 2
-        x = F.max_pool2d(x, 2, 2)
-        # After final pooling layer, image has to be flattened before going to fully connected layer
-        x = x.view(-1, 4*4*64)
-        # Attaching relu activation function to fully connected layer
-        x = F.relu(self.fc1(x))
-        # Adding dropout layer
-        x = self.dropout1(x)
-        x = self.fc2(x)
-        return x
-
-# Setting hidden layer dimensions during init    
-model = LeNet().to(device)
+# Loading AlexNet Model
+model = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
 print(model)
 
 #%%
