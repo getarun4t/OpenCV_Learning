@@ -3,10 +3,12 @@
 import torch 
 import torch.optim as optim
 import matplotlib.pyplot as plt
-import numpy as py
+import numpy as np
 
 from torchvision import transforms, models
 from PIL import Image
+
+images_folder = "../../PyTorch_Images/Images/"
 
 #%%
 # Importing pretrained model 
@@ -32,7 +34,7 @@ print("Using device:", device)
 vgg.to(device)
 
 # %%
-# Load Images
+# Creating Image Loader function
 def load_images(img_path, max_size=400, shape=None):
     # Opening Transforming the image to be compatible
     image = Image.open(img_path).convert('RGB')
@@ -54,3 +56,32 @@ def load_images(img_path, max_size=400, shape=None):
     image = in_transform(image).unsqueeze(0)
 
     return image
+
+#%%
+# Loading the images
+content = load_images(images_folder+"City.jpg").to(device)
+style = load_images(images_folder+"StarryNight.jpg").to(device)
+
+# %%
+# Converting to numpy images for compatibility
+def im_convert(tensor):
+    image = tensor.clone().detach().cpu().numpy()
+    # Removing single dimensional entries
+    image = image.squeeze()
+    # Getting 28*28*1 shape
+    image = image.transpose (1, 2, 0)
+    # Normalizing the image
+    image = image* np.array((0.5, 0.5, 0.5))+ np.array((0.5, 0.5, 0.5))
+    # Clipping the image
+    image = image.clip(0,1)
+    return image
+
+# %%
+# Plotting the images
+fig, (ax1, ax2) = plt.subplots(1,2, figsize=(20,10))
+ax1.imshow(im_convert(content))
+ax1.axis('off')
+ax2.imshow(im_convert(style))
+ax2.axis('off')
+
+# %%
