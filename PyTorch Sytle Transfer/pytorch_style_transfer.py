@@ -42,6 +42,9 @@ def load_images(img_path, max_size=400, shape=None):
         size = max_size
     else:
         size = max(image.size)
+
+    if shape is not None:
+        size = shape
     
     # Composing all the transforms required
     in_transform = transforms.Compose([
