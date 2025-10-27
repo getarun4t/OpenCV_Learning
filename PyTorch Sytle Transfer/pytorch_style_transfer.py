@@ -63,7 +63,7 @@ def load_images(img_path, max_size=400, shape=None):
 #%%
 # Loading the images
 content = load_images(images_folder+"City.jpg").to(device)
-style = load_images(images_folder+"StarryNight.jpg").to(device)
+style = load_images(images_folder+"StarryNight.jpg", shape=content.shape[-2:]).to(device)
 
 # %%
 # Converting to numpy images for compatibility
