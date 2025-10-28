@@ -165,4 +165,49 @@ counter = 0
 for ii in range(1, steps+1):
     # Collection of features for parent target image
     target_features = get_features(target, vgg)
+    # Calculating the content loss
+    content_loss = torch.mean((target_features['conv4_2'] - content_features['conv4_2'])**2)
+    # Calculating Style loss
+    # Combined wtd avg of 5 layers
+    style_loss = 0
+    for layer in style_weights:
+        target_feature = target_features[layer]
+        target_gram = gram_matrix(target_feature)
+        style_gram = style_grams[layer]
+        # Weighting each layer loss
+        layer_style_loss = style_weights[layer] * torch.mean((target_gram -style_gram)**2)
+        _, d, h, w = target_feature.shape 
+        style_loss += layer_style_loss / (d*h*w)
     
+    # Total loss of content and style loss
+    # Finding weighted total loss
+    total_loss = content_loss*content_weight + style_loss*style_weight
+
+    # Resetting optimizer
+    optimizer.zero_grad()
+    # Configuring min loss
+    total_loss.backward()
+    optimizer.step()
+
+    # Steps for data visualization
+    if ii % show_every == 0:
+        print('Total loss: ', total_loss.item())
+        print('Iteration: ', ii)
+        plt.imshow(im_convert(target))
+        plt.axis('off')
+        plt.show()
+    
+    # For a video
+    if ii% capture_frame==0:
+        image_array[counter] = im_convert(target)
+        counter +=1
+
+#%%
+# Plotting the loss
+fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(20, 10))
+ax1.imshow(im_convert(content))
+ax1.axis('off')
+ax1.imshow(im_convert(style))
+ax1.axis('off')
+ax1.imshow(im_convert(target))
+ax1.axis('off')
