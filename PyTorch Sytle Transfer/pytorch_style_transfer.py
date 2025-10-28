@@ -208,10 +208,10 @@ for ii in range(1, steps+1):
 fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(20, 10))
 ax1.imshow(im_convert(content))
 ax1.axis('off')
-ax1.imshow(im_convert(style))
-ax1.axis('off')
-ax1.imshow(im_convert(target))
-ax1.axis('off')
+ax2.imshow(im_convert(style))
+ax2.axis('off')
+ax3.imshow(im_convert(target))
+ax3.axis('off')
 
 #%%
 # Creating video of the image transition
@@ -222,7 +222,7 @@ for i in range (0, 300):
     img = image_array[i]
     img = img*255
     img = np.array(img, dtype=np.uint8)
-    cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     vid.write(img)
 vid.release()
