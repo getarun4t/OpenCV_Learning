@@ -115,3 +115,30 @@ content_features = get_features(content, vgg)
 style_features = get_features(style, vgg)
 
 #%%
+# Function to apply Gram Matrix
+def gram_matrix(tensor):
+    # Reshaping the tensor from 4d
+    _, d, h, w = tensor.size()
+    # Reshaping to 2d tensor
+    # d is feature depth
+    tensor = tensor.view(d, h*w)
+    # Getting gram matrix
+    gram = torch.mm(tensor, tensor.t())
+    return gram
+
+#%%
+# Applying gram matrix to style features
+style_grams = {layer: gram_matrix(style_features[layer]) for layer in style_features}
+
+# %%
+# Upper layers should have more weights for better style transfer
+style_weights = {'conv1_1': 1,
+                 'conv2_1': 0.75,
+                 'conv3_1': 0.2,
+                 'conv4_1': 0.2,  
+                 'conv5_1': 0.2}
+content_weight = 1
+# Can be changed and played around to find optimal weight
+style_weight = 1e6 
+
+#%%
