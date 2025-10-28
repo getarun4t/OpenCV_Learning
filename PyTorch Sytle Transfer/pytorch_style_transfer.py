@@ -4,6 +4,7 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
 from torchvision import transforms, models
 from PIL import Image
@@ -88,3 +89,142 @@ ax2.imshow(im_convert(style))
 ax2.axis('off')
 
 # %%
+# Function for getting image features
+def get_features(image, model):
+    # defining layers for feature extraction as a dict object
+    layers = {'0': 'conv1_1',   # all others style extraction
+              '5': 'conv2_1',
+              '10': 'conv3_1',
+              '19': 'conv4_1',
+              '21': 'conv4_2',  # content extraction
+              '28': 'conv5_1',}
+    # Empty dict for saving features
+    features={}
+
+    for name, layer in model._modules.items():
+        # Output of first layer becomes input for next
+        image = layer(image)
+        if name in layers:
+            # store output in features dict
+            features[layers[name]] = image
+    
+    return features
+
+# %%
+# Getting the features
+content_features = get_features(content, vgg)
+style_features = get_features(style, vgg)
+
+#%%
+# Function to apply Gram Matrix
+def gram_matrix(tensor):
+    # Reshaping the tensor from 4d
+    _, d, h, w = tensor.size()
+    # Reshaping to 2d tensor
+    # d is feature depth
+    tensor = tensor.view(d, h*w)
+    # Getting gram matrix
+    gram = torch.mm(tensor, tensor.t())
+    return gram
+
+#%%
+# Applying gram matrix to style features
+style_grams = {layer: gram_matrix(style_features[layer]) for layer in style_features}
+
+# %%
+# Upper layers should have more weights for better style transfer
+style_weights = {'conv1_1': 1,
+                 'conv2_1': 0.75,
+                 'conv3_1': 0.2,
+                 'conv4_1': 0.2,  
+                 'conv5_1': 0.2}
+content_weight = 1
+# Can be changed and played around to find optimal weight
+style_weight = 1e6 
+
+#%%
+# Getting target image
+target = content.clone().requires_grad_(True).to(device)
+
+# %%
+# Basic parameters for visualizing training process
+# Updated image every 300 iterations
+show_every = 300
+optimizer = optim.Adam([target], lr = 0.003)
+# More step, lower loss value, but takes longer, min 21k steps
+steps = 3000
+# Shape of target array
+height, width, channels = im_convert(target).shape
+image_array = np.empty(shape=(300, height, width, channels))
+# capturing frame every steps/300 
+capture_frame = steps/300
+# initial_value
+counter = 0
+
+#%%
+# Optimization process
+for ii in range(1, steps+1):
+    # Collection of features for parent target image
+    target_features = get_features(target, vgg)
+    # Calculating the content loss
+    content_loss = torch.mean((target_features['conv4_2'] - content_features['conv4_2'])**2)
+    # Calculating Style loss
+    # Combined wtd avg of 5 layers
+    style_loss = 0
+    for layer in style_weights:
+        target_feature = target_features[layer]
+        target_gram = gram_matrix(target_feature)
+        style_gram = style_grams[layer]
+        # Weighting each layer loss
+        layer_style_loss = style_weights[layer] * torch.mean((target_gram -style_gram)**2)
+        _, d, h, w = target_feature.shape 
+        style_loss += layer_style_loss / (d*h*w)
+    
+    # Total loss of content and style loss
+    # Finding weighted total loss
+    total_loss = content_loss*content_weight + style_loss*style_weight
+
+    # Resetting optimizer
+    optimizer.zero_grad()
+    # Configuring min loss
+    total_loss.backward()
+    optimizer.step()
+
+    # Steps for data visualization
+    if ii % show_every == 0:
+        print('Total loss: ', total_loss.item())
+        print('Iteration: ', ii)
+        plt.imshow(im_convert(target))
+        plt.axis('off')
+        plt.show()
+    
+    # For a video
+    if ii% capture_frame==0:
+        image_array[counter] = im_convert(target)
+        counter +=1
+
+#%%
+# Plotting the loss
+fig, (ax1, ax2, ax3) = plt.subplots(1,3, figsize=(20, 10))
+ax1.imshow(im_convert(content))
+ax1.axis('off')
+ax2.imshow(im_convert(style))
+ax2.axis('off')
+ax3.imshow(im_convert(target))
+ax3.axis('off')
+
+#%%
+# Creating video of the image transition
+frame_width, frame_height, _ = im_convert(target).shape
+vid = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'XVID'), 30, (frame_width, frame_height))
+
+for i in range (0, 300):
+    img = image_array[i]
+    img = img*255
+    img = np.array(img, dtype=np.uint8)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+    vid.write(img)
+vid.release()
+
+#%%
