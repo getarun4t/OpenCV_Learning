@@ -88,3 +88,30 @@ ax2.imshow(im_convert(style))
 ax2.axis('off')
 
 # %%
+# Function for getting image features
+def get_features(image, model):
+    # defining layers for feature extraction as a dict object
+    layers = {'0': 'conv1_1',   # all others style extraction
+              '5': 'conv2_1',
+              '10': 'conv3_1',
+              '19': 'conv4_1',
+              '21': 'conv4_2',  # content extraction
+              '28': 'conv5_1',}
+    # Empty dict for saving features
+    features={}
+
+    for name, layer in model._modules.items():
+        # Output of first layer becomes input for next
+        image = layer(image)
+        if name in layers:
+            # store output in features dict
+            features[layers[name]] = image
+    
+    return features
+
+# %%
+# Getting the features
+content_features = get_features(content, vgg)
+style_features = get_features(style, vgg)
+
+#%%
