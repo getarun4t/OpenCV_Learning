@@ -4,6 +4,7 @@ import torch
 import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
 from torchvision import transforms, models
 from PIL import Image
@@ -151,7 +152,7 @@ target = content.clone().requires_grad_(True).to(device)
 show_every = 300
 optimizer = optim.Adam([target], lr = 0.003)
 # More step, lower loss value, but takes longer, min 21k steps
-steps = 21000
+steps = 3000
 # Shape of target array
 height, width, channels = im_convert(target).shape
 image_array = np.empty(shape=(300, height, width, channels))
@@ -211,3 +212,19 @@ ax1.imshow(im_convert(style))
 ax1.axis('off')
 ax1.imshow(im_convert(target))
 ax1.axis('off')
+
+#%%
+# Creating video of the image transition
+frame_width, frame_height, _ = im_convert(target).shape
+vid = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc(*'XVID'), 30, (frame_width, frame_height))
+
+for i in range (0, 300):
+    img = image_array[i]
+    img = img*255
+    img = np.array(img, dtype=np.uint8)
+    cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    vid.write(img)
+vid.release()
+
+#%%
