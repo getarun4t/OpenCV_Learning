@@ -142,3 +142,27 @@ content_weight = 1
 style_weight = 1e6 
 
 #%%
+# Getting target image
+target = content.clone().requires_grad_(True).to(device)
+
+# %%
+# Basic parameters for visualizing training process
+# Updated image every 300 iterations
+show_every = 300
+optimizer = optim.Adam([target], lr = 0.003)
+# More step, lower loss value, but takes longer, min 21k steps
+steps = 21000
+# Shape of target array
+height, width, channels = im_convert(target).shape
+image_array = np.empty(shape=(300, height, width, channels))
+# capturing frame every steps/300 
+capture_frame = steps/300
+# initial_value
+counter = 0
+
+#%%
+# Optimization process
+for ii in range(1, steps+1):
+    # Collection of features for parent target image
+    target_features = get_features(target, vgg)
+    
